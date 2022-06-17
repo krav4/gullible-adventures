@@ -21,7 +21,7 @@ private:
 	Camera camera;
 	std::unique_ptr<Player> player;
 	std::unique_ptr<LevelDesigns> levels;
-	//std::unique_ptr<StaticCreature> lupi;
+	std::unique_ptr<StaticCreature> lupi;
 	//std::unique_ptr<StaticCreature> lizzy;
 	
 public:
@@ -48,19 +48,19 @@ public:
 		pSpriteSheets.walk_tile_rows = 1;
 		pSpriteSheets.walk_tile_count = 4;
 		pSpriteSheets.walk_tile_cols = 4;
-		pSpriteSheets.px_width = 200;
-		pSpriteSheets.px_height = 200;
+		pSpriteSheets.px_width = PX_TILE_SIZE_X;
+		pSpriteSheets.px_height = PX_TILE_SIZE_Y;
 
 		player = std::make_unique<Player>(this, &pSpriteSheets);
 
-		//SpriteConfig lupiConfig;
-		//lupiConfig.image_name = "lupi.png";
-		//lupiConfig.dims = { 200, 200 };
-		//lupiConfig.scale = { 0.5, 0.5 };
-		//lupi = std::make_unique<StaticCreature>(this, &lupiConfig);
+		SpriteConfig lupiConfig;
+		lupiConfig.image_name = "lupi.png";
+		lupiConfig.dims = { PX_TILE_SIZE_X, PX_TILE_SIZE_X };
+		lupiConfig.scale = { 0.5, 0.5 };
+		lupi = std::make_unique<StaticCreature>(this, &lupiConfig);
 
 		levels = std::make_unique<LevelDesigns>();
-		//levels.get()->add_static_creature('L', lupi.get());
+		levels.get()->add_static_creature('L', lupi.get());
 
 		player.get()->set_position({ 0.0f, 4.0f });
 

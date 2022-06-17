@@ -32,12 +32,18 @@ public:
 		pos = position;
 	}
 
-	// set tile position, use camera offset to update pixel position
-	/*void set_position(olc::vf2d position, olc::vf2d camera_offset)
+	// set pixel position
+	void set_position_px(olc::vi2d position)
 	{
-		pos = position;
-		pos_px = tile_to_px(position, camera_offset);
-	}*/
+		pos_px = position;
+	}
+
+	// set tile position, use camera offset to update pixel position
+	//void set_position(olc::vf2d position, olc::vf2d camera_offset)
+	//{
+	//	pos = position;
+	//	pos_px = tile_to_px(position, camera_offset);
+	//}
 
 	olc::vf2d get_f_tile_position()
 	{
@@ -86,7 +92,7 @@ public:
 		dims = config->dims;
 		scale = config->scale;
 		sprite = std::make_unique<olc::Sprite>(config->image_name);
-		std::make_unique<olc::Decal>(sprite.get());
+		decal = std::make_unique<olc::Decal>(sprite.get());
 	}
 
 	void draw(float fElapsedTime)
