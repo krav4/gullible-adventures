@@ -2,11 +2,13 @@
 #include "olcPixelGameEngine.h"
 #include "animation.h"
 #include "config.h"
+#include "level_designs.h"
 
 constexpr float player_walk_flip_offset = 1.0f;
-constexpr float player_walk_speed = 9.0f;
-constexpr float player_walk_animation_interval = 0.08f;
+constexpr float player_walk_speed = 6.0f;
+constexpr float player_walk_animation_interval = 0.02f;
 constexpr float player_scale = 0.5f;
+constexpr float player_jump_impulse_duration = 0.1f;
 
 struct PlayerSpriteSheets
 {
@@ -31,7 +33,6 @@ private:
 	float walk_flip_offset = 0.0f;
 
 	olc::PixelGameEngine* engine;
-	AnimationData adata;
 	std::unique_ptr<SpriteAnimation> walk_right_animation;
 	std::unique_ptr<SpriteAnimation> walk_left_animation;
 	std::unique_ptr<olc::Sprite> walk_right_sprite;
@@ -39,15 +40,17 @@ private:
 	std::unique_ptr<olc::Decal> walk_right_decal;
 	std::unique_ptr<olc::Decal> walk_left_decal;
 	float animation_interval = 0.08f;
+	float jumping_impulse_remaining_time = player_jump_impulse_duration;
 	int standing_tile = 0;
 ;
 
 public:
 
-	bool is_walking_backward = false;
+	bool is_pointing_right = true;
 	bool is_walking = false;
-	bool is_standing = true;
 	bool is_jumping = false;
+	bool is_on_even_ground = false;
+	bool is_standing = false;
 	float walk_speed = player_walk_speed;
 
 public:
@@ -84,9 +87,7 @@ public:
 
 	olc::vf2d get_f_tile_position()
 	{
-
 		return pos;
-
 	}
 
 	olc::vi2d get_px_position(void)
@@ -101,7 +102,7 @@ public:
 
 	void set_velocity(olc::vf2d velocity)
 	{
-		pos = velocity;
+		vel = velocity;
 	}
 
 	olc::vf2d get_velocity(void)
@@ -109,38 +110,49 @@ public:
 		return vel;
 	}
 
-	void update_position_from_walk(float fElapsedTime, olc::vf2d camera_offset)
+	void update_state_from_inputs(float fElapsedTime, olc::vf2d camera_offset)
 	{
+		
 		if (engine->GetKey(olc::Key::LEFT).bHeld)
 		{
-			is_walking_backward = true;
-			is_standing = false;
+			is_pointing_right = false;
+			is_walking = true;
 			vel = { -walk_speed, 0 };
 		}
 		else if (engine->GetKey(olc::Key::RIGHT).bHeld)
 		{
-			is_walking_backward = false;
-			is_standing = false;
+			is_pointing_right = true;
+			is_walking = true;
 			vel = { walk_speed, 0 };
-		}
-		else if (engine->GetKey(olc::Key::UP).bHeld)
-		{
-			is_jumping = true;
-			is_standing = false;
-			vel = { 0, -5 };
-		}
-		else if (engine->GetKey(olc::Key::DOWN).bHeld)
-		{
-			is_jumping = true;
-			is_standing = false;
-			vel = { 0, 5 };
 		}
 		else
 		{
-			is_standing = true;
-			
-			//walk_flip_offset = 0.0f;
-			vel = { 0.0f, 0.0f };
+			is_walking = false;
+			vel = { 0.0f, 0.0f };		
+		}
+
+		if (engine->GetKey(olc::Key::UP).bPressed && (is_on_even_ground))
+		{
+			is_jumping = true;
+			is_on_even_ground = false;
+		}
+
+		if (is_jumping && !is_on_even_ground)
+		{
+			if (jumping_impulse_remaining_time < 0.01f)
+			{
+				is_jumping = false;
+				jumping_impulse_remaining_time = player_jump_impulse_duration;
+			}
+			else 
+			{
+				vel.y = -20.0f;
+				jumping_impulse_remaining_time -= fElapsedTime;
+			}
+		}
+		if (!is_on_even_ground)
+		{
+			vel.y += 600.0f * fElapsedTime;
 		}
 
 		pos += vel * fElapsedTime;
@@ -150,35 +162,70 @@ public:
 		pos_px = tile_to_px(pos, camera_offset);
 	}
 
-	void draw_walk(float fElapsedTime)
+	void draw(float fElapsedTime)
 	{
 		olc::Decal* decal_ptr;
-		if (is_walking_backward)
+		AnimationData adata;
+		SpriteAnimation* animation;
+		olc::Decal* draw_decal;
+		if (!is_pointing_right)
 		{
-			if (is_standing || is_jumping)
-			{
-				adata = walk_left_animation->GetSpritesheetTile(standing_tile);
-			}
-			else
-			{
-				adata = walk_left_animation->GetInfo(fElapsedTime);
-			}
-
-			engine->DrawPartialDecal(pos_px, walk_left_decal.get(), adata.sourcePos, adata.sourceSize, scale);
+			animation = walk_left_animation.get();
+			draw_decal = walk_left_decal.get();
 		}
 		else
 		{
-			if (is_standing || is_jumping)
-			{
-				adata = walk_right_animation->GetSpritesheetTile(standing_tile);
-			}
-			else
-			{
-				adata = walk_right_animation->GetInfo(fElapsedTime);
-			}
-			engine->DrawPartialDecal(pos_px, walk_right_decal.get(), adata.sourcePos, adata.sourceSize, scale);
+			animation = walk_right_animation.get();
+			draw_decal = walk_right_decal.get();
 		}
-		// draw using walk decal
-		
+
+		if (!is_on_even_ground || !is_walking)
+		{
+			adata = animation->GetSpritesheetTile(standing_tile);
+		}
+		else
+		{
+			adata = animation->GetInfo(fElapsedTime);
+		}
+
+		engine->DrawPartialDecal(pos_px, draw_decal, adata.sourcePos, adata.sourceSize, scale);
+
+	}
+
+	void resolve_collisions(LevelDesigns * levels, int level_id)
+	{
+		Tile right_tile_top = levels->get_level_tile({ (int)(pos.x + 1.0f), (int)(pos.y) }, level_id);
+		Tile right_tile_bottom = levels->get_level_tile({ (int)(pos.x + 1.0f), (int)(pos.y + 0.9f) }, level_id);
+		Tile left_tile_top = levels->get_level_tile({ (int)(pos.x), (int)(pos.y) }, level_id);
+		Tile left_tile_bottom = levels->get_level_tile({ (int)(pos.x), (int)(pos.y + 0.9f) }, level_id);
+		Tile bottom_tile_left = levels->get_level_tile({ (int)(pos.x), (int)(pos.y + 1.0f) }, level_id);
+		Tile bottom_tile_right = levels->get_level_tile({ (int)(pos.x + 0.9f), (int)(pos.y + 1.0f) }, level_id);
+
+		if (right_tile_top.symbol != LEVEL_DESIGN_EMPTY || right_tile_bottom.symbol != LEVEL_DESIGN_EMPTY)
+		{
+			if ((pos.x + 1.0f) > right_tile_top.n_pos.x)
+			{
+				pos.x = int(pos.x);
+			}
+		}
+		if (left_tile_top.symbol != LEVEL_DESIGN_EMPTY || left_tile_bottom.symbol != LEVEL_DESIGN_EMPTY)
+		{
+			if ((pos.x) < left_tile_top.n_pos.x + 1.0f)
+			{
+				pos.x = int(pos.x + 1.0f);
+			}
+		}
+		if (bottom_tile_left.symbol != LEVEL_DESIGN_EMPTY || bottom_tile_right.symbol != LEVEL_DESIGN_EMPTY)
+		{
+			// set y velocity to 0
+			pos.y = int(pos.y);
+			is_on_even_ground = true;
+			vel.y = 0;
+		}
+		else
+		{
+			is_on_even_ground = false;
+		}
 	}
 };
+

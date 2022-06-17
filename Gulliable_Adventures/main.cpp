@@ -45,7 +45,7 @@ public:
 		player = std::make_unique<Player>(this, &pSpriteSheets);
 		levels = std::make_unique<LevelDesigns>();
 
-		player.get()->set_position({ 0.0f, 6.0f });
+		player.get()->set_position({ 0.0f, 4.0f });
 
 		camera = Camera(this, levels.get());
 		camera.set_center_position(player.get()->get_f_tile_position());
@@ -57,51 +57,12 @@ public:
 	{
 		Clear(olc::BLUE);
 		SetPixelMode(olc::Pixel::MASK);
-		olc::vf2d f_player_pos;
 		
-		player.get()->update_position_from_walk(fElapsedTime, camera.get_f_tile_offset());
-		
-		f_player_pos = player.get()->get_f_tile_position();
-
-		Tile right_tile_top = levels.get()->get_level_tile({(int)(f_player_pos.x + 1.0f), (int)(f_player_pos.y)}, level_id);
-		Tile right_tile_bottom = levels.get()->get_level_tile({ (int)(f_player_pos.x + 1.0f), (int)(f_player_pos.y + 0.9f) }, level_id);
-		Tile left_tile_top = levels.get()->get_level_tile({ (int)(f_player_pos.x), (int)(f_player_pos.y) }, level_id);
-		Tile left_tile_bottom = levels.get()->get_level_tile({ (int)(f_player_pos.x), (int)(f_player_pos.y + 0.9f) }, level_id);
-		if (right_tile_top.symbol != LEVEL_DESIGN_EMPTY)
-		{
-			if ((f_player_pos.x + 1.0f) > right_tile_top.n_pos.x)
-			{
-				f_player_pos.x = int(f_player_pos.x);
-				player.get()->set_position(f_player_pos);
-			}
-		}
-		else if (right_tile_bottom.symbol != LEVEL_DESIGN_EMPTY)
-		{
-			if ((f_player_pos.x + 1.0f) > right_tile_bottom.n_pos.x)
-			{
-				f_player_pos.x = int(f_player_pos.x);
-				player.get()->set_position(f_player_pos);
-			}
-		}
-		else if (left_tile_top.symbol != LEVEL_DESIGN_EMPTY)
-		{
-			if ((f_player_pos.x) < left_tile_top.n_pos.x)
-			{
-				f_player_pos.x = int(f_player_pos.x + 1.0f) ;
-				player.get()->set_position(f_player_pos);
-			}
-		}
-		else if (left_tile_bottom.symbol != LEVEL_DESIGN_EMPTY)
-		{
-			if ((f_player_pos.x) < left_tile_bottom.n_pos.x)
-			{
-				f_player_pos.x = int(f_player_pos.x + 1.0f);
-				player.get()->set_position(f_player_pos);
-			}
-		}
-		
-		player.get()->draw_walk(fElapsedTime);
+		player.get()->update_state_from_inputs(fElapsedTime, camera.get_f_tile_offset());
+		player.get()->resolve_collisions(levels.get(), level_id);
+		player.get()->draw(fElapsedTime);
 		camera.set_center_position(player.get()->get_f_tile_position());
+
 		camera.draw_level_scene(0, fElapsedTime); 
 		
 		return true;
