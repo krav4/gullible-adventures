@@ -1,6 +1,7 @@
 #pragma once
 #include "olcPixelGameEngine.h"
 #include "config.h"
+#include "creature.h"
 #include <string.h>
 
 #define LEVEL_DESIGN_N_TILES_X ((int)99)
@@ -11,6 +12,7 @@
 #define LEVEL_DESIGN_DIRT '#'
 #define LEVEL_DESIGN_BLACK ' '
 #define LEVEL_DESIGN_SKY '.'
+#define LEVEL_DESIGN_LUPI 'L'
 
 class Tile
 {
@@ -18,6 +20,7 @@ public:
 	char symbol;
 	olc::vi2d n_pos;
 	olc::vi2d size = { PX_TILE_SIZE_X, PX_TILE_SIZE_Y };
+
 	Tile() 
 	{
 		symbol = ' ';
@@ -33,8 +36,8 @@ public:
 class LevelDesigns
 {
 public:
-	
 	std::vector<std::wstring> designs;
+	std::map<char, StaticCreature*> static_creatures;
 	LevelDesigns()
 	{
 		std::wstring design_level_1;
@@ -67,6 +70,11 @@ public:
 		{
 			return Tile(' ', pos);
 		}
+	}
+
+	void add_static_creature(char symbol, StaticCreature* static_creature)
+	{
+		static_creatures[symbol] = static_creature;
 	}
 
 };

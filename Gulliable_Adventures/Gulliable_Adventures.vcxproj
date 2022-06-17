@@ -146,12 +146,14 @@
     <ClInclude Include="animation.h" />
     <ClInclude Include="camera.h" />
     <ClInclude Include="config.h" />
+    <ClInclude Include="creature.h" />
     <ClInclude Include="level_designs.h" />
     <ClInclude Include="player.h" />
     <ClInclude Include="olcPixelGameEngine.h" />
   </ItemGroup>
   <ItemGroup>
-    <Image Include="gull.png" />
+    <Image Include="player_walk_right.png" />
+    <Image Include="player_walk_left.png" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
