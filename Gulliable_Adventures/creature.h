@@ -1,9 +1,12 @@
 #pragma once
 #include "olcPixelGameEngine.h"
 #include "config.h"
+
+
 class Creature
 {
 public:
+	const olc::vi2d popup_text_offset = { 0, -30 };
 	olc::vf2d pos = {0.0f, 0.0f};
 	olc::vi2d pos_px = { 0, 0 };
 	olc::vf2d vel = { 0.0f, 0.0f };
@@ -68,6 +71,12 @@ public:
 	olc::vf2d get_velocity(void)
 	{
 		return vel;
+	}
+
+
+	virtual olc::vi2d emit_text_position(olc::vi2d extra_offset_px = {0, 0})
+	{
+		return (pos_px + popup_text_offset + extra_offset_px);
 	}
 
 	virtual void draw(float fElapsedTime) = 0;

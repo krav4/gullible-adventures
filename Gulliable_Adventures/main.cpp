@@ -75,14 +75,14 @@ public:
 	{
 		Clear(olc::BLUE);
 		SetPixelMode(olc::Pixel::MASK);
-		
-		
-		player.get()->update_state_from_inputs(fElapsedTime, camera.get_f_tile_offset());
+
+		player.get()->update_state(fElapsedTime, camera.get_f_tile_offset());
 		player.get()->resolve_collisions(levels.get(), level_id);
 	
 		camera.set_center_position(player.get()->get_f_tile_position());
-
+		
 		camera.draw_level_scene(0, fElapsedTime);
+		camera.draw_pop_up("Hello World", lupi.get()->emit_text_position());
 		player.get()->draw(fElapsedTime);
 		
 		return true;

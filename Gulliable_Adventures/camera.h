@@ -61,6 +61,11 @@ public:
 		return f_tile_offset;
 	}
 
+	void draw_pop_up(const std::string pop_up_text, olc::vi2d pos_px)
+	{
+		eng->DrawString(pos_px, pop_up_text);
+	}
+
 	void draw_level_scene(int level_id, float fElapsedTime)
 	{
 		olc::vi2d tile_draw_dims;
