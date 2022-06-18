@@ -3,6 +3,7 @@
 #include "config.h"
 #include "creature.h"
 #include <string.h>
+#include <unordered_map>
 
 #define LEVEL_DESIGN_N_TILES_X ((int)99)
 #define LEVEL_DESIGN_N_TILES_Y ((int)16)
@@ -37,7 +38,7 @@ class LevelDesigns
 {
 public:
 	std::vector<std::wstring> designs;
-	std::map<char, StaticCreature*> static_creatures;
+	std::unordered_map<char, StaticCreature*> static_creatures;
 	LevelDesigns()
 	{
 		std::wstring design_level_1;

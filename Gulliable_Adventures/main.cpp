@@ -35,14 +35,15 @@ public:
 public:
 	bool OnUserCreate() override
 	{
-		level_id = 0;
-
-		PlayerSpriteSheets pSpriteSheets;
 		if (!std::experimental::filesystem::exists("player_walk_right.png") ||
 			!std::experimental::filesystem::exists("player_walk_left.png"))
 		{
 			throw std::invalid_argument("Player walk sprite does not exist!");
 		}
+		level_id = 0;
+
+		PlayerSpriteSheets pSpriteSheets;
+		
 		pSpriteSheets.walk_right_spritesheet = "player_walk_right.png";
 		pSpriteSheets.walk_left_spritesheet = "player_walk_left.png";
 		pSpriteSheets.walk_tile_rows = 1;
@@ -54,8 +55,8 @@ public:
 		player = std::make_unique<Player>(this, &pSpriteSheets);
 
 		SpriteConfig lupiConfig;
-		lupiConfig.image_name = "lupi.png";
-		lupiConfig.dims = { PX_TILE_SIZE_X, PX_TILE_SIZE_X };
+		lupiConfig.image_name = "lupi_flower.png";
+		lupiConfig.dims = { PX_TILE_SIZE_X, PX_TILE_SIZE_Y };
 		lupiConfig.scale = { 0.5, 0.5 };
 		lupi = std::make_unique<StaticCreature>(this, &lupiConfig);
 
@@ -75,13 +76,14 @@ public:
 		Clear(olc::BLUE);
 		SetPixelMode(olc::Pixel::MASK);
 		
+		
 		player.get()->update_state_from_inputs(fElapsedTime, camera.get_f_tile_offset());
 		player.get()->resolve_collisions(levels.get(), level_id);
-		player.get()->draw(fElapsedTime);
-
+	
 		camera.set_center_position(player.get()->get_f_tile_position());
 
-		camera.draw_level_scene(0, fElapsedTime); 
+		camera.draw_level_scene(0, fElapsedTime);
+		player.get()->draw(fElapsedTime);
 		
 		return true;
 	}

@@ -126,21 +126,33 @@ public:
 		Tile bottom_tile_left = levels->get_level_tile({ (int)(pos.x), (int)(pos.y + 1.0f) }, level_id);
 		Tile bottom_tile_right = levels->get_level_tile({ (int)(pos.x + 0.9f), (int)(pos.y + 1.0f) }, level_id);
 
-		if (right_tile_top.symbol != LEVEL_DESIGN_EMPTY || right_tile_bottom.symbol != LEVEL_DESIGN_EMPTY)
+		// resolve collisions, making sure the tiles are not any of the static creatures
+		// if they are static creatures, we should make sure we dont resolve collisions
+
+		if ((right_tile_top.symbol != LEVEL_DESIGN_EMPTY && 
+				levels->static_creatures.find(right_tile_top.symbol) == levels->static_creatures.end()) ||
+			(right_tile_bottom.symbol != LEVEL_DESIGN_EMPTY && 
+				levels->static_creatures.find(right_tile_bottom.symbol) == levels->static_creatures.end()))
 		{
 			if ((pos.x + 1.0f) > right_tile_top.n_pos.x)
 			{
 				pos.x = int(pos.x);
 			}
 		}
-		if (left_tile_top.symbol != LEVEL_DESIGN_EMPTY || left_tile_bottom.symbol != LEVEL_DESIGN_EMPTY)
+		if ((left_tile_top.symbol != LEVEL_DESIGN_EMPTY && 
+				levels->static_creatures.find(left_tile_top.symbol) == levels->static_creatures.end()) ||
+			(left_tile_bottom.symbol != LEVEL_DESIGN_EMPTY && 
+				levels->static_creatures.find(left_tile_bottom.symbol) == levels->static_creatures.end()))
 		{
 			if ((pos.x) < left_tile_top.n_pos.x + 1.0f)
 			{
 				pos.x = int(pos.x + 1.0f);
 			}
 		}
-		if (bottom_tile_left.symbol != LEVEL_DESIGN_EMPTY || bottom_tile_right.symbol != LEVEL_DESIGN_EMPTY)
+		if ((bottom_tile_left.symbol != LEVEL_DESIGN_EMPTY && 
+				levels->static_creatures.find(bottom_tile_left.symbol) == levels->static_creatures.end()) ||
+			(bottom_tile_right.symbol != LEVEL_DESIGN_EMPTY && 
+				levels->static_creatures.find(bottom_tile_right.symbol) == levels->static_creatures.end()))
 		{
 			// set y velocity to 0
 			pos.y = int(pos.y);

@@ -74,16 +74,7 @@ public:
 
 				px_tile_pos.x = x_tile * tile.size.x - delta_tile.x;
 				px_tile_pos.y = y_tile * tile.size.y - delta_tile.y;
-				// drawing out static creatures
-				for (auto& creature : ldesigns->static_creatures)
-				{
-					// if the current tile is the creature symbol, draw the creature
-					if (tile.symbol == creature.first)
-					{
-						creature.second->set_position_px(px_tile_pos);
-						creature.second->draw(fElapsedTime);
-					}
-				}
+			
 				// drawing out the map
 				switch(tile.symbol)
 				{
@@ -92,6 +83,11 @@ public:
 					break;
 
 				case LEVEL_DESIGN_SKY:
+					break;
+
+				case LEVEL_DESIGN_LUPI:
+					ldesigns->static_creatures[LEVEL_DESIGN_LUPI]->set_position_px(px_tile_pos);
+					ldesigns->static_creatures[LEVEL_DESIGN_LUPI]->draw(fElapsedTime);
 					break;
 
 				default:
