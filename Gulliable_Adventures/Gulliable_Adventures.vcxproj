@@ -154,6 +154,7 @@
   <ItemGroup>
     <Image Include="player_walk_right.png" />
     <Image Include="player_walk_left.png" />
+    <Image Include="resource\player_death.png" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

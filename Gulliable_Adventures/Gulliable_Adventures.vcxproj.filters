@@ -49,5 +49,8 @@
     <Image Include="player_walk_left.png">
       <Filter>Resource Files</Filter>
     </Image>
+    <Image Include="resource\player_death.png">
+      <Filter>Resource Files</Filter>
+    </Image>
   </ItemGroup>
 </Project>

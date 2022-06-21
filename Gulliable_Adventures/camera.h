@@ -8,6 +8,7 @@ private:
 	
 	olc::vf2d f_tile_offset;
 	olc::vf2d f_center_pos;
+	olc::vi2d px_display_center;
 	olc::vi2d px_tile_pos;
 	olc::vi2d n_visible_tiles;
 	olc::vi2d delta_tile;
@@ -25,7 +26,9 @@ public:
 		f_tile_offset = { (float)(f_center_pos.x - n_visible_tiles.x/2.0f), (float)(f_center_pos.y - n_visible_tiles.y/2.0f) };
 		// default tile positions start at top left of the screen
 		px_tile_pos = { 0 ,0 };
-		// default visible tiles is 20x10 tiles
+		
+		px_display_center.x = (n_visible_tiles.x / 2) * PX_TILE_SIZE_X;
+		px_display_center.y = (n_visible_tiles.y / 2) * PX_TILE_SIZE_Y;
 		
 	};
 	Camera(olc::PixelGameEngine* engine, LevelDesigns * designs)
@@ -36,19 +39,23 @@ public:
 
 		n_visible_tiles.x = engine->ScreenWidth() / PX_TILE_SIZE_X;
 		n_visible_tiles.y = engine->ScreenHeight() / PX_TILE_SIZE_Y;
+
+		px_display_center.x = engine->ScreenWidth()/2;
+		px_display_center.y = engine->ScreenHeight()/2;
 	}
 	void set_center_position(olc::vf2d pos)
 	{
-
 		f_center_pos = pos;
+		// calculate the offset based on camera center position
 		f_tile_offset.x = f_center_pos.x - (float)(n_visible_tiles.x) / 2;
 		f_tile_offset.y = f_center_pos.y - (float)(n_visible_tiles.y) / 2;
 
+		// check if we are at left boundary of level map
 		if (f_tile_offset.x < 0.0f) f_tile_offset.x = 0.0f;
 		if (f_tile_offset.y < 0.0f) f_tile_offset.y = 0.0f;
-
-		//if (tile_offset.x > LEVEL_DESIGN_N_TILES_X - n_visible_tiles.x) tile_offset.x = LEVEL_DESIGN_N_TILES_X - n_visible_tiles.x;
-		//if (tile_offset.y > LEVEL_DESIGN_N_TILES_Y - n_visible_tiles.y) tile_offset.y = LEVEL_DESIGN_N_TILES_Y - n_visible_tiles.y;
+		// check if we are at right boundary of level map
+		if (f_tile_offset.x > LEVEL_DESIGN_N_TILES_X - n_visible_tiles.x) f_tile_offset.x = LEVEL_DESIGN_N_TILES_X - n_visible_tiles.x;
+		if (f_tile_offset.y > LEVEL_DESIGN_N_TILES_Y - n_visible_tiles.y) f_tile_offset.y = LEVEL_DESIGN_N_TILES_Y - n_visible_tiles.y;
 	}
 
 	olc::vf2d get_f_center_position()
@@ -64,6 +71,12 @@ public:
 	void draw_pop_up(const std::string pop_up_text, olc::vi2d pos_px)
 	{
 		eng->DrawString(pos_px, pop_up_text);
+	}
+
+	void draw_endgame()
+	{
+		std::string death_mes = "YOU DIED (SAD)";
+		eng->DrawString({ px_display_center.x - 500, px_display_center.y - 100}, death_mes, olc::VERY_DARK_RED, 10);
 	}
 
 	void draw_level_scene(int level_id, float fElapsedTime)
@@ -88,6 +101,9 @@ public:
 					break;
 
 				case LEVEL_DESIGN_SKY:
+					break;
+
+				case LEVEL_DESIGN_DEATH:
 					break;
 
 				case LEVEL_DESIGN_LUPI:
