@@ -1,2 +1,0 @@
-C:\Users\user\Projects\visual_studio\Gulliable_Adventures\x64\Release\Gulliable_Adventures.exe.lastcodeanalysissucceeded
-C:\Users\user\Projects\visual_studio\Gulliable_Adventures\Gulliable_Adventures\x64\Release\NativeCodeAnalysis.read.1.tlog
