@@ -211,7 +211,7 @@ public:
 		}
 	}
 
-	bool check_next_to_lupi()
+	bool check_next_to_static_creature()
 	{
 		if ((tiles.left_tile_bottom.symbol == LEVEL_DESIGN_LUPI) ||
 			(tiles.left_tile_top.symbol == LEVEL_DESIGN_LUPI) ||

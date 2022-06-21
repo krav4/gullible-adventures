@@ -42,15 +42,4 @@
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
-  <ItemGroup>
-    <Image Include="player_walk_right.png">
-      <Filter>Resource Files</Filter>
-    </Image>
-    <Image Include="player_walk_left.png">
-      <Filter>Resource Files</Filter>
-    </Image>
-    <Image Include="resource\player_death.png">
-      <Filter>Resource Files</Filter>
-    </Image>
-  </ItemGroup>
 </Project>

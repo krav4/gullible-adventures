@@ -57,7 +57,7 @@ public:
 		player = std::make_unique<Player>(this, &pSpriteSheets);
 
 		SpriteConfig lupiConfig;
-		lupiConfig.image_name = "lupi_flower.png";
+		lupiConfig.image_name = "resource/lupi_flower.png";
 		lupiConfig.dims = { PX_TILE_SIZE_X, PX_TILE_SIZE_Y };
 		lupiConfig.scale = { 0.5, 0.5 };
 		lupi = std::make_unique<Lupi>(this, &lupiConfig, "Lupi");
@@ -85,22 +85,27 @@ public:
 		if (player.get()->check_death_zone())
 		{
 			camera.draw_endgame();
-			if (GetKey(olc::Key::SPACE).bPressed)
+			if (GetKey(olc::Key::E).bPressed)
 			{
 				player.get()->set_position(levels.get()->get_init_player_position(level_id));
 				player.get()->set_velocity({ 0.0f, 0.0f });
 				player.get()->is_dead = false;
 			}
 		}
-		else if (player.get()->check_next_to_lupi())
+		else if (player.get()->check_next_to_static_creature())
 		{
-			if (GetKey(olc::Key::E).bPressed)
+			if (!lupi.get()->get_interaction_status())
 			{
+				camera.draw_pop_up("press E to talk", lupi.get()->emit_text_position({ 0, -10 }));
+			}
+			if (GetKey(olc::Key::E).bPressed)
+			{	
 				// set the dialogue to whatever lupi has to say
 				creature_dialogue = lupi.get()->get_dialogue();
 			}
+			camera.draw_pop_up(creature_dialogue, lupi.get()->emit_text_position());
 		}
-		camera.draw_pop_up(creature_dialogue, lupi.get()->emit_text_position());
+		
 		camera.set_center_position(player.get()->get_f_tile_position());
 		
 		camera.draw_level_scene(level_id, fElapsedTime);

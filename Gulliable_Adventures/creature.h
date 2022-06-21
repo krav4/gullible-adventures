@@ -149,7 +149,12 @@ public:
 
 	void set_interaction_status(bool is_interacting)
 	{
-		m_is_interacting = true;
+		m_is_interacting = is_interacting;
+	}
+
+	bool get_interaction_status()
+	{
+		return m_is_interacting;
 	}
 
 	std::string get_dialogue()
