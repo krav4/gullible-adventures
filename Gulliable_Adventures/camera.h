@@ -70,7 +70,7 @@ public:
 
 	void draw_pop_up(const std::string pop_up_text, olc::vi2d pos_px)
 	{
-		eng->DrawString(pos_px, pop_up_text);
+		eng->DrawString(pos_px, pop_up_text, olc::WHITE, 2);
 	}
 
 	void draw_endgame()

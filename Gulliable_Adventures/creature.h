@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 #include "olcPixelGameEngine.h"
 #include "config.h"
 
@@ -124,6 +124,17 @@ public:
 		initial_interaction.push_back("Hewo! Im Lupi!");
 		initial_interaction.push_back("I love DAD!");
 		initial_interaction.push_back("I HATE TRASHCANS!");
+		initial_interaction.push_back("I have a problem......");
+		initial_interaction.push_back("Would u help me? =3");
+		initial_interaction.push_back("See... my dad LOVES Virginia Chestnut Trees...");
+		initial_interaction.push_back("And I weally, weally want to make him happy >:3 ");
+		initial_interaction.push_back("So I have to deliver to him the world's last VIRGINIA CHESTNUT SEED!!! ");
+		initial_interaction.push_back("The way to DAD is very dangerous.. :c ");
+		initial_interaction.push_back("The entire path is FILLED with evil TRASHCANS >:O ");
+		initial_interaction.push_back("I need you to take this SEED and deliver it to DAD!! ");
+		initial_interaction.push_back("You can defeat the evil TRASHCANS by pressing SPACE }:)");
+		initial_interaction.push_back("<LUPI GAVE YOU THE CHESTNUT SEED>");
+		initial_interaction.push_back("THENK U THENK U ok i go sweep now");
 		interactions.push_back(initial_interaction);
 	};
 
