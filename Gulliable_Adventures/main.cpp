@@ -127,14 +127,14 @@ public:
 		{
 			if (!lupi.get()->get_interaction_status())
 			{
-				camera.draw_pop_up("press E to talk", lupi.get()->emit_text_position({ 0, -10 }));
+				camera.draw_pop_up("press E to talk", lupi.get()->emit_text_position({ -100, -10 }));
 			}
 			if (GetKey(olc::Key::E).bPressed)
 			{	
 				// set the dialogue to whatever lupi has to say
 				creature_dialogue = lupi.get()->get_dialogue();
 			}
-			camera.draw_pop_up(creature_dialogue, lupi.get()->emit_text_position());
+			camera.draw_pop_up(creature_dialogue, lupi.get()->emit_text_position({ -100, -10 }));
 		}
 		else if (player.get()->check_next_to_exit())
 		{
