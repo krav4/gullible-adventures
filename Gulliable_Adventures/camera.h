@@ -97,10 +97,14 @@ public:
 				switch(tile.symbol)
 				{
 				case LEVEL_DESIGN_DIRT:
-					eng->FillRect(px_tile_pos, tile.size, olc::DARK_GREY);
+					eng->DrawDecal(px_tile_pos, ldesigns->get_dirt_decal());
 					break;
 
 				case LEVEL_DESIGN_SKY:
+					break;
+
+				case LEVEL_DESIGN_CLOUD:
+					eng->DrawDecal(px_tile_pos, ldesigns->get_cloud_decal());
 					break;
 
 				case LEVEL_DESIGN_DEATH:

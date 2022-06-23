@@ -62,7 +62,11 @@ public:
 		lupiConfig.scale = { 0.5, 0.5 };
 		lupi = std::make_unique<Lupi>(this, &lupiConfig, "Lupi");
 
-		levels = std::make_unique<LevelDesigns>();
+		TileSpriteSheets tile_spritesheets;
+		tile_spritesheets.dirt = "resource/dirt.png";
+		tile_spritesheets.cloud = "resource/cloud.png";
+
+		levels = std::make_unique<LevelDesigns>(&tile_spritesheets);
 		levels.get()->set_static_creature('L', lupi.get());
 
 		player.get()->set_position({ 0.0f, 1.0f });

@@ -156,35 +156,40 @@ public:
 		tiles.bottom_tile_right = levels->get_level_tile({ (int)(pos.x + 0.9f), (int)(pos.y + 1.0f) }, level_id);
 	}
 
+	bool is_tile_solid(Tile* tile, LevelDesigns * levels, int level_id)
+	{
+		if (tile->symbol != LEVEL_DESIGN_EMPTY && tile->symbol != LEVEL_DESIGN_CLOUD &&
+			levels->static_creatures.find(tile->symbol) == levels->static_creatures.end())
+		{
+			return true;
+		}
+		else
+		{
+			return false;
+		}
+	}
+
 	void resolve_collisions(LevelDesigns* levels, int level_id)
 	{
 		// resolve collisions, making sure the tiles are not any of the static creatures
 		// if they are static creatures, we should make sure we dont resolve collisions
 
-		if ((tiles.right_tile_top.symbol != LEVEL_DESIGN_EMPTY &&
-				levels->static_creatures.find(tiles.right_tile_top.symbol) == levels->static_creatures.end()) ||
-			(tiles.right_tile_bottom.symbol != LEVEL_DESIGN_EMPTY &&
-				levels->static_creatures.find(tiles.right_tile_bottom.symbol) == levels->static_creatures.end()))
+		if ((is_tile_solid(&tiles.right_tile_top, levels, level_id) || (is_tile_solid(&tiles.right_tile_bottom, levels, level_id))))
 		{
 			if ((pos.x + 1.0f) > tiles.right_tile_top.n_pos.x)
 			{
 				pos.x = int(pos.x);
 			}
 		}
-		if ((tiles.left_tile_top.symbol != LEVEL_DESIGN_EMPTY &&
-				levels->static_creatures.find(tiles.left_tile_top.symbol) == levels->static_creatures.end()) ||
-			(tiles.left_tile_bottom.symbol != LEVEL_DESIGN_EMPTY &&
-				levels->static_creatures.find(tiles.left_tile_bottom.symbol) == levels->static_creatures.end()))
+		if ((is_tile_solid(&tiles.left_tile_top, levels, level_id) || (is_tile_solid(&tiles.left_tile_bottom, levels, level_id))))
 		{
 			if ((pos.x) < tiles.left_tile_top.n_pos.x + 1.0f)
 			{
 				pos.x = int(pos.x + 1.0f);
 			}
 		}
-		if ((tiles.bottom_tile_left.symbol != LEVEL_DESIGN_EMPTY &&
-				levels->static_creatures.find(tiles.bottom_tile_left.symbol) == levels->static_creatures.end()) ||
-			(tiles.bottom_tile_right.symbol != LEVEL_DESIGN_EMPTY &&
-				levels->static_creatures.find(tiles.bottom_tile_right.symbol) == levels->static_creatures.end()))
+
+		if ((is_tile_solid(&tiles.bottom_tile_left, levels, level_id) || (is_tile_solid(&tiles.bottom_tile_right, levels, level_id))))
 		{
 			// set y velocity to 0
 			pos.y = int(pos.y);
