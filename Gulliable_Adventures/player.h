@@ -9,7 +9,7 @@ constexpr float player_walk_flip_offset = 1.0f;
 constexpr float player_walk_speed = 6.0f;
 constexpr float player_walk_animation_interval = 0.02f;
 constexpr float player_scale = 0.5f;
-constexpr float player_jump_impulse_duration = 0.1f;
+constexpr float player_jump_impulse_duration = 0.2f;
 
 struct PlayerSpriteSheets
 {
@@ -128,14 +128,14 @@ public:
 			{
 				// we are still under the impulse, keep decrementing impulse time and 
 				// make sure that velocity is going up
-				vel.y = -20.0f;
+				vel.y = -25.0f;
 				jumping_impulse_remaining_time -= fElapsedTime;
 			}
 		}
 		// apply gravity if we are not on even ground
 		if (!is_on_even_ground)
 		{
-			vel.y += 400.0f * fElapsedTime;
+			vel.y += 1300.0f * fElapsedTime;
 		}
 
 		// kinematics, pffffff
@@ -216,12 +216,36 @@ public:
 		}
 	}
 
+	bool check_next_to_symbol(char symbol)
+	{
+		if ((tiles.left_tile_bottom.symbol == symbol) ||
+			(tiles.left_tile_top.symbol == symbol) ||
+			(tiles.right_tile_bottom.symbol == symbol) ||
+			(tiles.right_tile_top.symbol == symbol))
+		{
+			return true;
+		}
+		else
+		{
+			return false;
+		}
+	}
+
 	bool check_next_to_static_creature()
 	{
-		if ((tiles.left_tile_bottom.symbol == LEVEL_DESIGN_LUPI) ||
-			(tiles.left_tile_top.symbol == LEVEL_DESIGN_LUPI) ||
-			(tiles.right_tile_bottom.symbol == LEVEL_DESIGN_LUPI) ||
-			(tiles.right_tile_top.symbol == LEVEL_DESIGN_LUPI))
+		if (check_next_to_symbol(LEVEL_DESIGN_LUPI))
+		{
+			return true;
+		}
+		else
+		{
+			return false;
+		}
+	}
+
+	bool check_next_to_exit()
+	{
+		if (check_next_to_symbol(LEVEL_DESIGN_EXIT))
 		{
 			return true;
 		}

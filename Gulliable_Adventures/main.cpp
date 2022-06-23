@@ -22,7 +22,8 @@ private:
 	std::unique_ptr<Player> player;
 	std::unique_ptr<LevelDesigns> levels;
 	std::unique_ptr<Lupi> lupi;
-	//std::unique_ptr<StaticCreature> lizzy;
+
+	bool is_game_started = false;
 	
 public:
 	GullyGame()
@@ -82,7 +83,24 @@ public:
 	{
 		Clear(olc::BLUE);
 		SetPixelMode(olc::Pixel::MASK);
-
+		if (!is_game_started)
+		{
+			if (GetKey(olc::Key::E).bPressed)
+			{
+				is_game_started = true;
+			}
+			else
+			{
+				DrawString({ 100 , 100 }, "Welcome to the GULLIABLE ADVENTURES!!!", olc::WHITE, 4);
+				DrawString({ 100 , 150 }, "Use Arrow Keys to move, E to interact!", olc::WHITE, 4);
+				DrawString({ 100 , 200 }, "Keep pressing E to exhaust dialogue!", olc::WHITE, 4);
+				DrawString({ 100 , 250 }, "Press UP to jump!", olc::WHITE, 4);
+				DrawString({ 100 , 300 }, "Press SPACE to attack!", olc::WHITE, 4);
+				DrawString({ 100 , 400 }, "Press E to continue...", olc::WHITE, 4);
+				player.get()->draw(fElapsedTime);
+			}
+			return true;
+		}
 		player.get()->update_state(fElapsedTime, camera.get_f_tile_offset());
 		player.get()->update_surrounding_tiles(levels.get(), level_id);
 		player.get()->resolve_collisions(levels.get(), level_id);
@@ -109,6 +127,16 @@ public:
 			}
 			camera.draw_pop_up(creature_dialogue, lupi.get()->emit_text_position());
 		}
+		else if (player.get()->check_next_to_exit())
+		{
+			camera.draw_pop_up("Press E for Next Level", player.get()->emit_text_position());
+			if (GetKey(olc::Key::E).bPressed)
+			{
+				level_id += 1;
+				player.get()->set_position(levels.get()->get_init_player_position(level_id));
+			}
+		}
+
 		
 		camera.set_center_position(player.get()->get_f_tile_position());
 		
