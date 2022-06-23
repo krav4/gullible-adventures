@@ -48,6 +48,7 @@ struct TileSpriteSheets
 {
 	std::string dirt;
 	std::string cloud;
+	std::string exit;
 };
 
 class LevelDesigns
@@ -58,6 +59,8 @@ private:
 	std::unique_ptr<olc::Decal> m_dirt_decal;
 	std::unique_ptr<olc::Sprite> m_cloud_sprite;
 	std::unique_ptr<olc::Decal> m_cloud_decal;
+	std::unique_ptr<olc::Sprite> m_exit_sprite;
+	std::unique_ptr<olc::Decal> m_exit_decal;
 	olc::PixelGameEngine* m_eng;
 public:
 	std::unordered_map<char, StaticCreature*> static_creatures;
@@ -69,6 +72,9 @@ public:
 		m_cloud_sprite = std::make_unique<olc::Sprite>(tile_spritesheets->cloud);
 		m_cloud_decal = std::make_unique<olc::Decal>(m_cloud_sprite.get());
 
+		m_exit_sprite = std::make_unique<olc::Sprite>(tile_spritesheets->exit);
+		m_exit_decal = std::make_unique<olc::Decal>(m_exit_sprite.get());
+
 		std::wstring design_level_1;
 		design_level_1 += L".......................C..................C..............C.........................................";
 		design_level_1 += L".C.........C.................C..........................................C...........C..............";
@@ -76,7 +82,7 @@ public:
 		design_level_1 += L"............C................C.................C....................................C..............";
 		design_level_1 += L".....C..............................C..........................L.............C.....................";
 		design_level_1 += L".............######....######..........................##################................C.........";
-		design_level_1 += L".....E..............................................###..................#######...................";
+		design_level_1 += L"......E.............................................###..................#######..................E";
 		design_level_1 += L"##########......................#####..........#####..............................#################";
 		design_level_1 += L"...................................................................................................";
 		design_level_1 += L".....................................##########....................................................";
@@ -123,6 +129,11 @@ public:
 	olc::Decal* get_cloud_decal()
 	{
 		return m_cloud_decal.get();
+	}
+
+	olc::Decal* get_exit_decal()
+	{
+		return m_exit_decal.get();
 	}
 
 	Tile get_level_tile(olc::vi2d pos, int level_id)

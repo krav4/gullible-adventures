@@ -24,6 +24,8 @@ private:
 	std::unique_ptr<Lupi> lupi;
 
 	bool is_game_started = false;
+
+	olc::Pixel background_color;
 	
 public:
 	GullyGame()
@@ -43,7 +45,7 @@ public:
 			throw std::invalid_argument("Player sprite does not exist!");
 		}
 		level_id = 0;
-
+		background_color = olc::Pixel( 0, 0, 255);
 		PlayerSpriteSheets pSpriteSheets;
 		
 		pSpriteSheets.walk_right_spritesheet = "resource/player_walk_right.png";
@@ -66,6 +68,7 @@ public:
 		TileSpriteSheets tile_spritesheets;
 		tile_spritesheets.dirt = "resource/dirt.png";
 		tile_spritesheets.cloud = "resource/cloud.png";
+		tile_spritesheets.exit = "resource/exit.png";
 
 		levels = std::make_unique<LevelDesigns>(&tile_spritesheets);
 		levels.get()->set_static_creature('L', lupi.get());
@@ -81,7 +84,7 @@ public:
 
 	bool OnUserUpdate(float fElapsedTime) override
 	{
-		Clear(olc::BLUE);
+		Clear(background_color);
 		SetPixelMode(olc::Pixel::MASK);
 		if (!is_game_started)
 		{
@@ -101,6 +104,12 @@ public:
 			}
 			return true;
 		}
+		// snap camera to player position
+		camera.set_center_position(player.get()->get_f_tile_position());
+		// draw all the level tiles
+		camera.draw_level_scene(level_id, fElapsedTime);
+
+		// update player state to new
 		player.get()->update_state(fElapsedTime, camera.get_f_tile_offset());
 		player.get()->update_surrounding_tiles(levels.get(), level_id);
 		player.get()->resolve_collisions(levels.get(), level_id);
@@ -132,15 +141,15 @@ public:
 			camera.draw_pop_up("Press E for Next Level", player.get()->emit_text_position());
 			if (GetKey(olc::Key::E).bPressed)
 			{
-				level_id += 1;
+				level_id++;
 				player.get()->set_position(levels.get()->get_init_player_position(level_id));
 			}
 		}
 
 		
-		camera.set_center_position(player.get()->get_f_tile_position());
+
 		
-		camera.draw_level_scene(level_id, fElapsedTime);
+		
 
 		player.get()->draw(fElapsedTime);
 		

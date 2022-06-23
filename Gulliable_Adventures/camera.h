@@ -75,8 +75,8 @@ public:
 
 	void draw_endgame()
 	{
-		std::string death_mes = "YOU DIED (SAD)";
-		eng->DrawString({ px_display_center.x - 500, px_display_center.y - 100}, death_mes, olc::VERY_DARK_RED, 10);
+		eng->DrawString({ px_display_center.x - 500, px_display_center.y - 100}, "YOU DIED (SAD)", olc::VERY_DARK_RED, 10);
+		eng->DrawString({ px_display_center.x - 500, px_display_center.y + 100 }, "Press E to Continue...", olc::VERY_DARK_RED, 2);
 	}
 
 	void draw_level_scene(int level_id, float fElapsedTime)
@@ -105,6 +105,10 @@ public:
 
 				case LEVEL_DESIGN_CLOUD:
 					eng->DrawDecal(px_tile_pos, ldesigns->get_cloud_decal());
+					break;
+
+				case LEVEL_DESIGN_EXIT:
+					eng->DrawDecal(px_tile_pos, ldesigns->get_exit_decal());
 					break;
 
 				case LEVEL_DESIGN_DEATH:

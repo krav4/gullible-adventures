@@ -158,7 +158,7 @@ public:
 
 	bool is_tile_solid(Tile* tile, LevelDesigns * levels, int level_id)
 	{
-		if (tile->symbol != LEVEL_DESIGN_EMPTY && tile->symbol != LEVEL_DESIGN_CLOUD &&
+		if (tile->symbol != LEVEL_DESIGN_EMPTY && tile->symbol != LEVEL_DESIGN_CLOUD && tile->symbol != LEVEL_DESIGN_EXIT &&
 			levels->static_creatures.find(tile->symbol) == levels->static_creatures.end())
 		{
 			return true;
