@@ -100,6 +100,7 @@ public:
 	{
 		Clear(background_color);
 		SetPixelMode(olc::Pixel::MASK);
+		/** ------------------------- WELCOME SCREEN ----------------------*/
 		if (!is_game_started)
 		{
 			if (GetKey(olc::Key::E).bPressed)
@@ -118,16 +119,21 @@ public:
 			}
 			return true;
 		}
+
+		/*--------------------------- DRAWING THE LEVEL -----------------------*/
 		// snap camera to player position
 		camera.set_center_position(player.get()->get_f_tile_position());
 		// draw all the level tiles
 		camera.draw_level_scene(level_id, fElapsedTime);
 
+
+		/*--------------------------- UPDATING PLAYER STATE -----------------------*/
 		// update player state to new
 		player.get()->update_state(fElapsedTime, camera.get_f_tile_offset());
 		player.get()->update_surrounding_tiles(levels.get(), level_id);
 		player.get()->resolve_collisions(levels.get(), level_id);
 
+		/*--------------------------- FALLING TO DEATH ---------------------*/
 		if (player.get()->check_death_zone())
 		{
 			camera.draw_endgame();
@@ -138,6 +144,7 @@ public:
 				player.get()->is_dead = false;
 			}
 		}
+		/*--------------------------- NPC INTERACTION  -----------------------*/
 		else if (player.get()->check_next_to_static_creature())
 		{
 			if (!lupi.get()->get_interaction_status())
@@ -151,6 +158,7 @@ public:
 			}
 			camera.draw_pop_up(creature_dialogue, lupi.get()->emit_text_position({ -100, -10 }));
 		}
+		/*--------------------------- PROCEEDING TO NEXT LEVEL -----------------------*/
 		else if (player.get()->check_next_to_exit())
 		{
 			camera.draw_pop_up("Press E for Next Level", player.get()->emit_text_position());
@@ -160,8 +168,10 @@ public:
 				player.get()->set_position(levels.get()->get_init_player_position(level_id));
 			}
 		}
-
+		/*--------------------------- DRAWING THE PLAYER -----------------------*/
 		player.get()->draw(fElapsedTime);
+
+		/*--------------------------- DEMO CODE  -----------------------*/
 		trashcan_demo.get()->update_surrounding_tiles(levels.get(), level_id);
 		trashcan_demo.get()->resolve_collisions(levels.get(), level_id);
 		trashcan_demo.get()->update_state(fElapsedTime, camera.get_f_tile_offset());
