@@ -18,3 +18,5 @@
 #define LEVEL_DESIGN_LUPI 'L'
 #define LEVEL_DESIGN_EXIT 'E'
 #define LEVEL_DESIGN_DEATH 'D'
+
+static constexpr float gravity = 1300.f;

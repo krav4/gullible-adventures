@@ -5,6 +5,7 @@
 #include "player.h"
 #include "camera.h"
 #include "creature.h"
+#include "animated_creature.h"
 #include "config.h"
 #include <experimental/filesystem>
 
@@ -22,6 +23,7 @@ private:
 	std::unique_ptr<Player> player;
 	std::unique_ptr<LevelDesigns> levels;
 	std::unique_ptr<Lupi> lupi;
+	std::unique_ptr<Trashcan> trashcan_demo;
 
 	bool is_game_started = false;
 
@@ -65,6 +67,18 @@ public:
 		lupiConfig.scale = { 0.5, 0.5 };
 		lupi = std::make_unique<Lupi>(this, &lupiConfig, "Lupi");
 
+		TrashCanSpriteSheets trashcan_spritesheets;
+		trashcan_spritesheets.px_height = PX_TILE_SIZE_X;
+		trashcan_spritesheets.px_width = PX_TILE_SIZE_Y;
+		trashcan_spritesheets.walk_left_spritesheet = "resource/trashcan_walk_left.png";
+		trashcan_spritesheets.walk_right_spritesheet = "resource/trashcan_walk_left.png";
+		trashcan_spritesheets.walk_tile_cols = 4;
+		trashcan_spritesheets.walk_tile_rows = 1;
+		trashcan_spritesheets.walk_tile_count = 4;
+		trashcan_demo = std::make_unique<Trashcan>(this, &trashcan_spritesheets);
+		
+		trashcan_demo.get()->set_velocity({ 0.0f, 0.0f });
+
 		TileSpriteSheets tile_spritesheets;
 		tile_spritesheets.dirt = "resource/dirt.png";
 		tile_spritesheets.cloud = "resource/cloud.png";
@@ -78,7 +92,7 @@ public:
 
 		camera = Camera(this, levels.get());
 		camera.set_center_position(player.get()->get_f_tile_position());
-
+		trashcan_demo.get()->set_position({ 3.0f, 5.0f }, camera.get_f_tile_offset());
 		return true;
 	}
 
@@ -148,7 +162,11 @@ public:
 		}
 
 		player.get()->draw(fElapsedTime);
+		trashcan_demo.get()->update_surrounding_tiles(levels.get(), level_id);
+		trashcan_demo.get()->resolve_collisions(levels.get(), level_id);
+		trashcan_demo.get()->update_state(fElapsedTime, camera.get_f_tile_offset());
 		
+		trashcan_demo.get()->draw(fElapsedTime);
 		return true;
 	}
 };

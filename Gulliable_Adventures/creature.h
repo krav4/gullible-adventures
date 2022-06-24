@@ -91,6 +91,7 @@ public:
 	std::unique_ptr<olc::Decal> decal;
 	std::unique_ptr<olc::Sprite> sprite;
 
+
 public:
 	StaticCreature() { name = "Static Creature";  };
 	StaticCreature(olc::PixelGameEngine* engine, const SpriteConfig * config, std::string name_input) : Creature(engine)

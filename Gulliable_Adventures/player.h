@@ -29,11 +29,7 @@ class Player : public AnimatedCreature
 {
 
 public:
-	bool is_pointing_right = true;
-	bool is_walking = false;
-	bool is_jumping = false;
-	bool is_standing = false;
-	bool is_dead = false;
+	
 	float walk_speed = player_walk_speed;
 
 private:
@@ -69,9 +65,8 @@ public:
 		death_sprite = std::make_unique<olc::Sprite>(spriteSheets->death_spritesheet);
 		death_decal = std::make_unique<olc::Decal>(death_sprite.get());
 	}
-	~Player() {};
 
-	void update_state(float fElapsedTime, olc::vf2d camera_offset)
+	virtual void update_state(float fElapsedTime, olc::vf2d camera_offset) override
 	{
 		if (is_dead)
 		{
@@ -122,7 +117,7 @@ public:
 		// apply gravity if we are not on even ground
 		if (!is_on_even_ground)
 		{
-			vel.y += 1300.0f * fElapsedTime;
+			vel.y += gravity * fElapsedTime;
 		}
 
 		// kinematics, pffffff
@@ -173,7 +168,6 @@ public:
 
 	void draw(float fElapsedTime)
 	{
-		olc::Decal* decal_ptr;
 		AnimationData adata;
 		SpriteAnimation* animation;
 		olc::Decal* draw_decal;
