@@ -5,20 +5,6 @@
 #include <string.h>
 #include <unordered_map>
 
-#define LEVEL_DESIGN_N_TILES_X ((int)99)
-#define LEVEL_DESIGN_N_TILES_Y ((int)16)
-
-#define LEVEL_DESIGN_EMPTY '.'
-#define LEVEL_DESIGN_GRASS 'G'
-#define LEVEL_DESIGN_DIRT '#'
-#define LEVEL_DESIGN_BLACK ' '
-#define LEVEL_DESIGN_SKY '.'
-#define LEVEL_DESIGN_CLOUD 'C'
-#define LEVEL_DESIGN_LUPI 'L'
-#define LEVEL_DESIGN_EXIT 'E'
-#define LEVEL_DESIGN_DEATH 'D'
-
-
 class Tile
 {
 public:

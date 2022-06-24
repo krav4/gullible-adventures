@@ -1,7 +1,7 @@
 ﻿#pragma once
 #include "olcPixelGameEngine.h"
 #include "config.h"
-
+#include "level_designs.h"
 
 class Creature
 {
@@ -82,7 +82,6 @@ typedef struct SpriteConfig
 	olc::vi2d dims;
 	olc::vf2d scale;
 } SpriteConfig;
-
 
 class StaticCreature : public Creature
 {

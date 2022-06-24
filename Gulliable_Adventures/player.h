@@ -3,7 +3,7 @@
 #include "animation.h"
 #include "config.h"
 #include "level_designs.h"
-#include "creature.h"
+#include "animated_creature.h"
 #include <unordered_map>
 constexpr float player_walk_flip_offset = 1.0f;
 constexpr float player_walk_speed = 6.0f;
@@ -23,18 +23,19 @@ struct PlayerSpriteSheets
 	int px_height;
 };
 
-struct PlayerSurroundingTiles
-{
-	Tile right_tile_top;
-	Tile right_tile_bottom;
-	Tile left_tile_top;
-	Tile left_tile_bottom;
-	Tile bottom_tile_left;
-	Tile bottom_tile_right;
-};
 
-class Player : public Creature
+
+class Player : public AnimatedCreature
 {
+
+public:
+	bool is_pointing_right = true;
+	bool is_walking = false;
+	bool is_jumping = false;
+	bool is_standing = false;
+	bool is_dead = false;
+	float walk_speed = player_walk_speed;
+
 private:
 	float walk_flip_offset = 0.0f;
 	std::unique_ptr<SpriteAnimation> walk_right_animation;
@@ -45,25 +46,11 @@ private:
 	std::unique_ptr<olc::Decal> walk_left_decal;
 	std::unique_ptr<olc::Sprite> death_sprite;
 	std::unique_ptr<olc::Decal> death_decal;
-
-	PlayerSurroundingTiles tiles;
-	float animation_interval = 0.08f;
 	float jumping_impulse_remaining_time = player_jump_impulse_duration;
 	int standing_tile = 0;
 
 public:
-
-	bool is_pointing_right = true;
-	bool is_walking = false;
-	bool is_jumping = false;
-	bool is_on_even_ground = false;
-	bool is_standing = false;
-	bool is_dead = false;
-	float walk_speed = player_walk_speed;
-
-public:
-
-	Player(olc::PixelGameEngine * engine_input, PlayerSpriteSheets * spriteSheets) : Creature(engine_input)
+	Player(olc::PixelGameEngine * engine_input, PlayerSpriteSheets * spriteSheets) : AnimatedCreature(engine_input)
 	{
 		name = "Gully";
 		scale = { player_scale, player_scale };
@@ -146,83 +133,12 @@ public:
 		pos_px = tile_to_px(pos, camera_offset);
 	}
 
-	void update_surrounding_tiles(LevelDesigns* levels, int level_id)
-	{
-		tiles.right_tile_top = levels->get_level_tile({ (int)(pos.x + 1.0f), (int)(pos.y) }, level_id);
-		tiles.right_tile_bottom = levels->get_level_tile({ (int)(pos.x + 1.0f), (int)(pos.y + 0.9f) }, level_id);
-		tiles.left_tile_top = levels->get_level_tile({ (int)(pos.x), (int)(pos.y) }, level_id);
-		tiles.left_tile_bottom = levels->get_level_tile({ (int)(pos.x), (int)(pos.y + 0.9f) }, level_id);
-		tiles.bottom_tile_left = levels->get_level_tile({ (int)(pos.x), (int)(pos.y + 1.0f) }, level_id);
-		tiles.bottom_tile_right = levels->get_level_tile({ (int)(pos.x + 0.9f), (int)(pos.y + 1.0f) }, level_id);
-	}
-
-	bool is_tile_solid(Tile* tile, LevelDesigns * levels, int level_id)
-	{
-		if (tile->symbol != LEVEL_DESIGN_EMPTY && tile->symbol != LEVEL_DESIGN_CLOUD && tile->symbol != LEVEL_DESIGN_EXIT &&
-			levels->static_creatures.find(tile->symbol) == levels->static_creatures.end())
-		{
-			return true;
-		}
-		else
-		{
-			return false;
-		}
-	}
-
-	void resolve_collisions(LevelDesigns* levels, int level_id)
-	{
-		// resolve collisions, making sure the tiles are not any of the static creatures
-		// if they are static creatures, we should make sure we dont resolve collisions
-
-		if ((is_tile_solid(&tiles.right_tile_top, levels, level_id) || (is_tile_solid(&tiles.right_tile_bottom, levels, level_id))))
-		{
-			if ((pos.x + 1.0f) > tiles.right_tile_top.n_pos.x)
-			{
-				pos.x = int(pos.x);
-			}
-		}
-		if ((is_tile_solid(&tiles.left_tile_top, levels, level_id) || (is_tile_solid(&tiles.left_tile_bottom, levels, level_id))))
-		{
-			if ((pos.x) < tiles.left_tile_top.n_pos.x + 1.0f)
-			{
-				pos.x = int(pos.x + 1.0f);
-			}
-		}
-
-		if ((is_tile_solid(&tiles.bottom_tile_left, levels, level_id) || (is_tile_solid(&tiles.bottom_tile_right, levels, level_id))))
-		{
-			// set y velocity to 0
-			pos.y = int(pos.y);
-			is_on_even_ground = true;
-			vel.y = 0;
-		}
-		else
-		{
-			is_on_even_ground = false;
-		}
-	}
-
 	bool check_death_zone()
 	{
 		if ((tiles.bottom_tile_left.symbol == LEVEL_DESIGN_DEATH) ||
 			(tiles.bottom_tile_right.symbol == LEVEL_DESIGN_DEATH))
 		{
 			is_dead = true;
-			return true;
-		}
-		else
-		{
-			return false;
-		}
-	}
-
-	bool check_next_to_symbol(char symbol)
-	{
-		if ((tiles.left_tile_bottom.symbol == symbol) ||
-			(tiles.left_tile_top.symbol == symbol) ||
-			(tiles.right_tile_bottom.symbol == symbol) ||
-			(tiles.right_tile_top.symbol == symbol))
-		{
 			return true;
 		}
 		else

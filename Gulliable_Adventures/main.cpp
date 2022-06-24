@@ -113,6 +113,7 @@ public:
 		player.get()->update_state(fElapsedTime, camera.get_f_tile_offset());
 		player.get()->update_surrounding_tiles(levels.get(), level_id);
 		player.get()->resolve_collisions(levels.get(), level_id);
+
 		if (player.get()->check_death_zone())
 		{
 			camera.draw_endgame();
@@ -145,11 +146,6 @@ public:
 				player.get()->set_position(levels.get()->get_init_player_position(level_id));
 			}
 		}
-
-		
-
-		
-		
 
 		player.get()->draw(fElapsedTime);
 		
