@@ -18,10 +18,13 @@
     <ClCompile Include="main.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="level.cpp">
+    <ClCompile Include="tile.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="tile.cpp">
+    <ClCompile Include="creature.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="level.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -41,10 +44,13 @@
     <ClInclude Include="config.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="level.h">
+    <ClInclude Include="tile.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="tile.h">
+    <ClInclude Include="creature.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="level.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
