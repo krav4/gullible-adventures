@@ -81,12 +81,14 @@ public:
 
 	void draw_level_scene(int level_id, float fElapsedTime)
 	{
+		Level* current_level = ldesigns->get_level(level_id);
 		olc::vi2d tile_draw_dims;
 		for (int x_tile = 0; x_tile < n_visible_tiles.x; x_tile++)
 		{
 			for (int y_tile = 0; y_tile < n_visible_tiles.y; y_tile++)
 			{
-				Tile tile = ldesigns->get_level_tile({ (x_tile + (int)f_tile_offset.x), (y_tile + (int)f_tile_offset.y) }, level_id);
+				
+				Tile tile = current_level->get_level_tile({ (x_tile + (int)f_tile_offset.x), (y_tile + (int)f_tile_offset.y) });
 				delta_tile.x = (f_tile_offset.x - (int)f_tile_offset.x) * tile.size.x;
 				delta_tile.y = (f_tile_offset.y - (int)f_tile_offset.y) * tile.size.y;
 

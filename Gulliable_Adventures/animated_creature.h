@@ -32,17 +32,17 @@ public:
 
 	virtual void update_state(float fElapsedTime, olc::vf2d camera_offset) = 0;
 
-	virtual void update_surrounding_tiles(LevelDesigns* levels, int level_id)
+	virtual void update_surrounding_tiles(Level * current_level)
 	{
-		tiles.right_tile_top = levels->get_level_tile({ (int)(pos.x + 1.0f), (int)(pos.y) }, level_id);
-		tiles.right_tile_bottom = levels->get_level_tile({ (int)(pos.x + 1.0f), (int)(pos.y + 0.9f) }, level_id);
-		tiles.left_tile_top = levels->get_level_tile({ (int)(pos.x), (int)(pos.y) }, level_id);
-		tiles.left_tile_bottom = levels->get_level_tile({ (int)(pos.x), (int)(pos.y + 0.9f) }, level_id);
-		tiles.bottom_tile_left = levels->get_level_tile({ (int)(pos.x), (int)(pos.y + 1.0f) }, level_id);
-		tiles.bottom_tile_right = levels->get_level_tile({ (int)(pos.x + 0.9f), (int)(pos.y + 1.0f) }, level_id);
+		tiles.right_tile_top = current_level->get_level_tile({ (int)(pos.x + 1.0f), (int)(pos.y) });
+		tiles.right_tile_bottom = current_level->get_level_tile({ (int)(pos.x + 1.0f), (int)(pos.y + 0.9f) });
+		tiles.left_tile_top = current_level->get_level_tile({ (int)(pos.x), (int)(pos.y) });
+		tiles.left_tile_bottom = current_level->get_level_tile({ (int)(pos.x), (int)(pos.y + 0.9f) });
+		tiles.bottom_tile_left = current_level->get_level_tile({ (int)(pos.x), (int)(pos.y + 1.0f) });
+		tiles.bottom_tile_right = current_level->get_level_tile({ (int)(pos.x + 0.9f), (int)(pos.y + 1.0f) });
 	}
 
-	virtual bool is_tile_solid(Tile* tile, LevelDesigns* levels, int level_id)
+	virtual bool is_tile_solid(Tile* tile, LevelDesigns* levels)
 	{
 		if (tile->symbol != LEVEL_DESIGN_EMPTY && tile->symbol != LEVEL_DESIGN_CLOUD && tile->symbol != LEVEL_DESIGN_EXIT &&
 			levels->static_creatures.find(tile->symbol) == levels->static_creatures.end())
@@ -75,14 +75,14 @@ public:
 		// resolve collisions, making sure the tiles are not any of the static creatures
 		// if they are static creatures, we should make sure we dont resolve collisions
 
-		if ((is_tile_solid(&tiles.right_tile_top, levels, level_id) || (is_tile_solid(&tiles.right_tile_bottom, levels, level_id))))
+		if ((is_tile_solid(&tiles.right_tile_top, levels) || (is_tile_solid(&tiles.right_tile_bottom, levels))))
 		{
 			if ((pos.x + 1.0f) > tiles.right_tile_top.n_pos.x)
 			{
 				pos.x = int(pos.x);
 			}
 		}
-		if ((is_tile_solid(&tiles.left_tile_top, levels, level_id) || (is_tile_solid(&tiles.left_tile_bottom, levels, level_id))))
+		if ((is_tile_solid(&tiles.left_tile_top, levels) || (is_tile_solid(&tiles.left_tile_bottom, levels))))
 		{
 			if ((pos.x) < tiles.left_tile_top.n_pos.x + 1.0f)
 			{
@@ -90,7 +90,7 @@ public:
 			}
 		}
 
-		if ((is_tile_solid(&tiles.bottom_tile_left, levels, level_id) || (is_tile_solid(&tiles.bottom_tile_right, levels, level_id))))
+		if ((is_tile_solid(&tiles.bottom_tile_left, levels) || (is_tile_solid(&tiles.bottom_tile_right, levels))))
 		{
 			// set y velocity to 0
 			pos.y = int(pos.y);
@@ -152,6 +152,7 @@ public:
 		walk_left_animation->SetParams(animation_interval, walk_left_sprite->width, walk_left_sprite->height, spriteSheets->walk_tile_cols, spriteSheets->walk_tile_rows, spriteSheets->walk_tile_count);
 
 	}
+	using Creature::set_position;
 	// overloading set position to include setting the "old" position on x axis
 	void set_position(olc::vf2d position, olc::vf2d camera_offset)
 	{

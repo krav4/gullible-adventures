@@ -130,7 +130,7 @@ public:
 		/*--------------------------- UPDATING PLAYER STATE -----------------------*/
 		// update player state to new
 		player.get()->update_state(fElapsedTime, camera.get_f_tile_offset());
-		player.get()->update_surrounding_tiles(levels.get(), level_id);
+		player.get()->update_surrounding_tiles(levels.get()->get_level(level_id));
 		player.get()->resolve_collisions(levels.get(), level_id);
 
 		/*--------------------------- FALLING TO DEATH ---------------------*/
@@ -172,7 +172,7 @@ public:
 		player.get()->draw(fElapsedTime);
 
 		/*--------------------------- DEMO CODE  -----------------------*/
-		trashcan_demo.get()->update_surrounding_tiles(levels.get(), level_id);
+		trashcan_demo.get()->update_surrounding_tiles(levels.get()->get_level(level_id));
 		trashcan_demo.get()->resolve_collisions(levels.get(), level_id);
 		trashcan_demo.get()->update_state(fElapsedTime, camera.get_f_tile_offset());
 		
