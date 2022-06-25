@@ -12,12 +12,15 @@ public:
 	olc::vf2d player_init_position;
 
 private:
-	//std::vector<std::unique_ptr<Trashcan>> trashcans;
+	std::vector<Trashcan> trashcans;
+
+
 public:
 	Level();
+	Level(std::wstring design, olc::PixelGameEngine* eng, TrashCanSpriteSheets* spriteSheets);
 	std::vector<Tile> get_tiles_with_symbol(char symbol);
 	Tile get_level_tile(olc::vi2d pos);
-	//std::vector<std::unique_ptr<Trashcan>> spawn_trashcans(olc::PixelGameEngine* eng, TrashCanSpriteSheets* spriteSheets);
+	std::vector<Trashcan>* get_trashcans();
 };
 
 class LevelDesigns
@@ -30,11 +33,12 @@ private:
 	std::unique_ptr<olc::Decal> m_cloud_decal;
 	std::unique_ptr<olc::Sprite> m_exit_sprite;
 	std::unique_ptr<olc::Decal> m_exit_decal;
+	TrashCanSpriteSheets trash_sprites;
 	olc::PixelGameEngine* m_eng;
 public:
 	std::unordered_map<char, StaticCreature*> static_creatures;
-	LevelDesigns(TileSpriteSheets* tile_spritesheets);
-
+	LevelDesigns(olc::PixelGameEngine * eng, TileSpriteSheets* tile_spritesheets, TrashCanSpriteSheets* trash_spritesheets);
+	
 	olc::vf2d get_init_player_position(int level_id);
 
 	olc::Decal* get_dirt_decal();

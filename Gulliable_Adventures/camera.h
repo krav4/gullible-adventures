@@ -113,6 +113,10 @@ public:
 					eng->DrawDecal(px_tile_pos, ldesigns->get_exit_decal());
 					break;
 
+				case LEVEL_DESIGN_TRASHCAN:
+					// draw empty space in place of trashcan for the level rendering
+					break;
+
 				case LEVEL_DESIGN_DEATH:
 					break;
 

@@ -82,7 +82,7 @@ public:
 		tile_spritesheets.cloud = "resource/cloud.png";
 		tile_spritesheets.exit = "resource/exit.png";
 
-		levels = std::make_unique<LevelDesigns>(&tile_spritesheets);
+		levels = std::make_unique<LevelDesigns>(this, &tile_spritesheets, &trashcan_spritesheets);
 		levels.get()->set_static_creature('L', lupi.get());
 
 		player.get()->set_position({ 0.0f, 1.0f });
@@ -90,7 +90,6 @@ public:
 
 		camera = Camera(this, levels.get());
 		camera.set_center_position(player.get()->get_f_tile_position());
-		trashcan_demo.get()->set_position({ 3.0f, 5.0f }, camera.get_f_tile_offset());
 		return true;
 	}
 
@@ -98,6 +97,8 @@ public:
 	{
 		Clear(background_color);
 		SetPixelMode(olc::Pixel::MASK);
+		Level* current_level = levels.get()->get_level(level_id);
+
 		/** ------------------------- WELCOME SCREEN ----------------------*/
 		if (!is_game_started)
 		{
@@ -128,7 +129,7 @@ public:
 		/*--------------------------- UPDATING PLAYER STATE -----------------------*/
 		// update player state to new
 		player.get()->update_state(fElapsedTime, camera.get_f_tile_offset());
-		player.get()->update_surrounding_tiles(levels.get()->get_level(level_id));
+		player.get()->update_surrounding_tiles(current_level);
 		player.get()->resolve_collisions(levels.get(), level_id);
 
 		/*--------------------------- FALLING TO DEATH ---------------------*/
@@ -166,15 +167,22 @@ public:
 				player.get()->set_position(levels.get()->get_init_player_position(level_id));
 			}
 		}
+
+		/*--------------------------- DRAWING ENEMIES -----------------------*/
+
+		
+		std::vector<Trashcan> * trashcans = current_level->get_trashcans();
+		for (auto& trashcan : *trashcans)
+		{
+			trashcan.update_state(fElapsedTime, camera.get_f_tile_offset());
+			trashcan.update_surrounding_tiles(current_level);
+			trashcan.resolve_collisions(levels.get(), level_id);
+			trashcan.draw(fElapsedTime);
+		}
+		
 		/*--------------------------- DRAWING THE PLAYER -----------------------*/
 		player.get()->draw(fElapsedTime);
 
-		/*--------------------------- DEMO CODE  -----------------------*/
-		trashcan_demo.get()->update_surrounding_tiles(levels.get()->get_level(level_id));
-		trashcan_demo.get()->resolve_collisions(levels.get(), level_id);
-		trashcan_demo.get()->update_state(fElapsedTime, camera.get_f_tile_offset());
-		
-		trashcan_demo.get()->draw(fElapsedTime);
 		return true;
 	}
 };

@@ -22,8 +22,6 @@ struct PlayerSpriteSheets
 	int px_height;
 };
 
-
-
 class Player : public AnimatedCreature
 {
 

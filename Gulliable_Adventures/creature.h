@@ -63,6 +63,7 @@ public:
 	olc::PixelGameEngine* engine = nullptr;
 	Creature();
 	Creature(olc::PixelGameEngine* engine_input);
+	Creature(const Creature&);
 	~Creature() {};
 
 	olc::vi2d tile_to_px(olc::vf2d tiles, olc::vf2d camera_offset);
@@ -146,7 +147,9 @@ private:
 	virtual bool is_tile_solid(Tile* tile, LevelDesigns* levels);
 public:
 	AnimatedCreature();
+	
 	AnimatedCreature(olc::PixelGameEngine* eng);
+	AnimatedCreature(const AnimatedCreature&);
 	virtual void update_state(float fElapsedTime, olc::vf2d camera_offset) = 0;
 	virtual void update_surrounding_tiles(Level* current_level);
 	virtual bool check_next_to_symbol(char symbol);
@@ -165,16 +168,18 @@ private:
 	std::unique_ptr<olc::Decal> walk_right_decal;
 	std::unique_ptr<olc::Decal> walk_left_decal;
 
+	TrashCanSpriteSheets m_spritesheets;
+
 	int pixels_patrolled = 0;
 	int px_patrol_limit = 100;
-	float patrol_velocity = 0.5f;
+	float patrol_velocity = 1.0f;
 	olc::vi2d prev_pos_px;
+
+	void create_decals();
 
 public:
 	Trashcan(olc::PixelGameEngine* eng, TrashCanSpriteSheets* spriteSheets, int patrol_limit = 100);
-	using Creature::set_position;
-	// overloading set position to include setting the "old" position on x axis
-	void set_position(olc::vf2d position, olc::vf2d camera_offset);
+	Trashcan(const Trashcan& original);
 
 	virtual void update_state(float fElapsedTime, olc::vf2d camera_offset) override;
 	virtual void draw(float fElapsedTime) override;

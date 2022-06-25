@@ -12,6 +12,17 @@ Creature::Creature(olc::PixelGameEngine* engine_input)
 	engine = engine_input;
 };
 
+Creature::Creature(const Creature& original)
+{
+	pos = original.pos;
+	pos_px = original.pos_px;
+	dims = original.dims;
+	engine = original.engine;
+	name = original.name;
+	scale = original.scale;
+	vel = original.vel;
+}
+
 olc::vi2d Creature::tile_to_px(olc::vf2d tiles, olc::vf2d camera_offset)
 {
 	olc::vi2d ret;
@@ -65,7 +76,7 @@ olc::vi2d Creature::emit_text_position(olc::vi2d extra_offset_px)
 
 
 StaticCreature::StaticCreature() { name = "Static Creature"; };
-StaticCreature::StaticCreature(olc::PixelGameEngine* engine, const SpriteConfig* config, std::string name_input)
+StaticCreature::StaticCreature(olc::PixelGameEngine* engine, const SpriteConfig* config, std::string name_input) : Creature(engine)
 {
 	name = name_input;
 	dims = config->dims;
@@ -151,8 +162,20 @@ std::string Lupi::get_dialogue()
 
 }
 
-AnimatedCreature::AnimatedCreature() { name = "AnimatedCreature"; };
-AnimatedCreature::AnimatedCreature(olc::PixelGameEngine* eng) : Creature(eng) { name = "AnimatedCreature"; };
+AnimatedCreature::AnimatedCreature() 
+{
+	name = "AnimatedCreature";
+};
+AnimatedCreature::AnimatedCreature(olc::PixelGameEngine* eng) : Creature(eng) 
+{ 
+	name = "AnimatedCreature"; 
+};
+AnimatedCreature::AnimatedCreature(const AnimatedCreature& original) : Creature(original)
+{
+
+}
+
+
 
 void AnimatedCreature::update_surrounding_tiles(Level* current_level)
 {
@@ -167,6 +190,7 @@ void AnimatedCreature::update_surrounding_tiles(Level* current_level)
 bool AnimatedCreature::is_tile_solid(Tile* tile, LevelDesigns* levels)
 {
 	if (tile->symbol != LEVEL_DESIGN_EMPTY && tile->symbol != LEVEL_DESIGN_CLOUD && tile->symbol != LEVEL_DESIGN_EXIT &&
+		tile->symbol != LEVEL_DESIGN_TRASHCAN &&
 		levels->static_creatures.find(tile->symbol) == levels->static_creatures.end())
 	{
 		return true;
@@ -227,29 +251,34 @@ void AnimatedCreature::resolve_collisions(LevelDesigns* levels, int level_id)
 
 Trashcan::Trashcan(olc::PixelGameEngine* eng, TrashCanSpriteSheets* spriteSheets, int patrol_limit) : AnimatedCreature(eng)
 {
+	m_spritesheets = *spriteSheets;
 	health_points = 3;
 	animation_interval = 0.08f;
-
 	px_patrol_limit = patrol_limit;
-
-	walk_right_sprite = std::make_unique<olc::Sprite>(spriteSheets->walk_right_spritesheet);
-	walk_right_decal = std::make_unique<olc::Decal>(walk_right_sprite.get());
-	walk_right_animation = std::make_unique<SpriteAnimation>();
-	walk_right_animation->SetParams(animation_interval, walk_right_sprite->width, walk_right_sprite->height, spriteSheets->walk_tile_cols, spriteSheets->walk_tile_rows, spriteSheets->walk_tile_count);
-
-	walk_left_sprite = std::make_unique<olc::Sprite>(spriteSheets->walk_left_spritesheet);
-	walk_left_decal = std::make_unique<olc::Decal>(walk_left_sprite.get());
-	walk_left_animation = std::make_unique<SpriteAnimation>();
-	walk_left_animation->SetParams(animation_interval, walk_left_sprite->width, walk_left_sprite->height, spriteSheets->walk_tile_cols, spriteSheets->walk_tile_rows, spriteSheets->walk_tile_count);
-
+	create_decals();
 }
 
-// overloading set position to include setting the "old" position on x axis
-void Trashcan::set_position(olc::vf2d position, olc::vf2d camera_offset)
+Trashcan::Trashcan(const Trashcan& original) : AnimatedCreature(original)
 {
-	pos = position;
-	pos_px = tile_to_px(pos, camera_offset);
-	prev_pos_px = pos_px;
+	health_points = original.health_points;
+	animation_interval = original.animation_interval;
+	m_spritesheets = original.m_spritesheets;
+	px_patrol_limit = original.px_patrol_limit;
+	create_decals();
+}
+
+void Trashcan::create_decals()
+{
+	walk_right_sprite = std::make_unique<olc::Sprite>(m_spritesheets.walk_right_spritesheet);
+	walk_right_decal = std::make_unique<olc::Decal>(walk_right_sprite.get());
+	walk_right_animation = std::make_unique<SpriteAnimation>();
+	walk_right_animation->SetParams(animation_interval, walk_right_sprite->width, walk_right_sprite->height, m_spritesheets.walk_tile_cols, m_spritesheets.walk_tile_rows, m_spritesheets.walk_tile_count);
+
+	walk_left_sprite = std::make_unique<olc::Sprite>(m_spritesheets.walk_left_spritesheet);
+	walk_left_decal = std::make_unique<olc::Decal>(walk_left_sprite.get());
+	walk_left_animation = std::make_unique<SpriteAnimation>();
+	walk_left_animation->SetParams(animation_interval, walk_left_sprite->width, walk_left_sprite->height, m_spritesheets.walk_tile_cols, m_spritesheets.walk_tile_rows, m_spritesheets.walk_tile_count);
+
 }
 
 void Trashcan::update_state(float fElapsedTime, olc::vf2d camera_offset)
@@ -270,20 +299,19 @@ void Trashcan::update_state(float fElapsedTime, olc::vf2d camera_offset)
 	{
 		vel.y += 100.0f * fElapsedTime;
 	}
-	// calculate pixel position and how many pixels we patrolled so far
-	prev_pos_px = pos_px;
 
 	// kinematics
 	pos += vel * fElapsedTime;
-
-
 	pos_px = tile_to_px(pos, camera_offset);
-	pixels_patrolled += (pos_px.x - prev_pos_px.x);
+
 	// if we reached the patrolling limit, now flip the trashcan
-	if (abs(pixels_patrolled) > px_patrol_limit)
+	if (tiles.bottom_tile_right.symbol == LEVEL_DESIGN_EMPTY && is_pointing_right)
 	{
-		is_pointing_right = !is_pointing_right;
-		pixels_patrolled = 0;
+		is_pointing_right = false;
+	}
+	else if (tiles.bottom_tile_left.symbol == LEVEL_DESIGN_EMPTY && !is_pointing_right)
+	{
+		is_pointing_right = true;
 	}
 }
 
