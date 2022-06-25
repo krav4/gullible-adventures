@@ -2,25 +2,25 @@
 #pragma once
 #include "olcPixelGameEngine.h"
 #include "animation.h"
+#include "tile.h"
 #include "config.h"
 #include <string.h>
 #include <unordered_map>
 
-class Creature;
-class AnimatedCreature;
-class StaticCreature;
-class Trashcan;
+// forward declaring some classes
+class LevelDesigns;
+class Level;
 
-class Tile
+struct AnimatedCreatureSurroundingTiles
 {
-public:
-	char symbol;
-	olc::vi2d n_pos;
-	olc::vi2d size = { PX_TILE_SIZE_X, PX_TILE_SIZE_Y };
-
-	Tile();
-	Tile(char tile_symbol, olc::vi2d tile_pos);
+	Tile right_tile_top;
+	Tile right_tile_bottom;
+	Tile left_tile_top;
+	Tile left_tile_bottom;
+	Tile bottom_tile_left;
+	Tile bottom_tile_right;
 };
+
 
 struct TileSpriteSheets
 {
@@ -47,58 +47,6 @@ struct TrashCanSpriteSheets
 	int px_height;
 };
 
-struct AnimatedCreatureSurroundingTiles
-{
-	Tile right_tile_top;
-	Tile right_tile_bottom;
-	Tile left_tile_top;
-	Tile left_tile_bottom;
-	Tile bottom_tile_left;
-	Tile bottom_tile_right;
-};
-
-struct Level
-{
-public:
-	std::wstring design;
-	olc::vf2d player_init_position;
-
-private:
-	//std::vector<std::unique_ptr<Trashcan>> trashcans;
-public:
-	Level();
-	std::vector<Tile> get_tiles_with_symbol(char symbol);
-	Tile get_level_tile(olc::vi2d pos);
-	//std::vector<std::unique_ptr<Trashcan>> spawn_trashcans(olc::PixelGameEngine* eng, TrashCanSpriteSheets* spriteSheets);
-};
-
-class LevelDesigns
-{
-private:
-	std::vector<Level> levels;
-	std::unique_ptr<olc::Sprite> m_dirt_sprite;
-	std::unique_ptr<olc::Decal> m_dirt_decal;
-	std::unique_ptr<olc::Sprite> m_cloud_sprite;
-	std::unique_ptr<olc::Decal> m_cloud_decal;
-	std::unique_ptr<olc::Sprite> m_exit_sprite;
-	std::unique_ptr<olc::Decal> m_exit_decal;
-	olc::PixelGameEngine* m_eng;
-public:
-	std::unordered_map<char, StaticCreature*> static_creatures;
-	LevelDesigns(TileSpriteSheets* tile_spritesheets);
-
-	olc::vf2d get_init_player_position(int level_id);
-
-	olc::Decal* get_dirt_decal();
-
-	olc::Decal* get_cloud_decal();
-
-	olc::Decal* get_exit_decal();
-
-	Level* get_level(int level_id);
-
-	void set_static_creature(char symbol, StaticCreature* static_creature);
-};
 
 
 class Creature
@@ -231,3 +179,49 @@ public:
 	virtual void update_state(float fElapsedTime, olc::vf2d camera_offset) override;
 	virtual void draw(float fElapsedTime) override;
 };
+
+
+
+struct Level
+{
+public:
+	std::wstring design;
+	olc::vf2d player_init_position;
+
+private:
+	//std::vector<std::unique_ptr<Trashcan>> trashcans;
+public:
+	Level();
+	std::vector<Tile> get_tiles_with_symbol(char symbol);
+	Tile get_level_tile(olc::vi2d pos);
+	//std::vector<std::unique_ptr<Trashcan>> spawn_trashcans(olc::PixelGameEngine* eng, TrashCanSpriteSheets* spriteSheets);
+};
+
+class LevelDesigns
+{
+private:
+	std::vector<Level> levels;
+	std::unique_ptr<olc::Sprite> m_dirt_sprite;
+	std::unique_ptr<olc::Decal> m_dirt_decal;
+	std::unique_ptr<olc::Sprite> m_cloud_sprite;
+	std::unique_ptr<olc::Decal> m_cloud_decal;
+	std::unique_ptr<olc::Sprite> m_exit_sprite;
+	std::unique_ptr<olc::Decal> m_exit_decal;
+	olc::PixelGameEngine* m_eng;
+public:
+	std::unordered_map<char, StaticCreature*> static_creatures;
+	LevelDesigns(TileSpriteSheets* tile_spritesheets);
+
+	olc::vf2d get_init_player_position(int level_id);
+
+	olc::Decal* get_dirt_decal();
+
+	olc::Decal* get_cloud_decal();
+
+	olc::Decal* get_exit_decal();
+
+	Level* get_level(int level_id);
+
+	void set_static_creature(char symbol, StaticCreature* static_creature);
+};
+

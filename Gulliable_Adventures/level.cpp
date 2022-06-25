@@ -5,19 +5,6 @@
 #include <string.h>
 #include <unordered_map>
 
-Tile::Tile()
-{
-	symbol = ' ';
-	n_pos = { 0, 0 };
-};
-
-Tile::Tile(char tile_symbol, olc::vi2d tile_pos)
-{
-	symbol = tile_symbol;
-	n_pos = tile_pos;
-}
-
-
 Level::Level()
 {
 	//trashcans = std::make_unique<std::vector<Trashcan>>();
@@ -295,7 +282,6 @@ std::string Lupi::get_dialogue()
 	}
 
 }
-
 
 AnimatedCreature::AnimatedCreature() { name = "AnimatedCreature"; };
 AnimatedCreature::AnimatedCreature(olc::PixelGameEngine* eng) : Creature(eng) { name = "AnimatedCreature"; };
