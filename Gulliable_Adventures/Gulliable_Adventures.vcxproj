@@ -140,16 +140,14 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="creature.cpp" />
-    <ClCompile Include="level_designs.cpp" />
     <ClCompile Include="main.cpp" />
+    <ClCompile Include="level.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="animation.h" />
     <ClInclude Include="camera.h" />
     <ClInclude Include="config.h" />
-    <ClInclude Include="creature.h" />
-    <ClInclude Include="level_designs.h" />
+    <ClInclude Include="level.h" />
     <ClInclude Include="player.h" />
     <ClInclude Include="olcPixelGameEngine.h" />
   </ItemGroup>

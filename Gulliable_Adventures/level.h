@@ -1,6 +1,7 @@
 #pragma once
 #pragma once
 #include "olcPixelGameEngine.h"
+#include "animation.h"
 #include "config.h"
 #include <string.h>
 #include <unordered_map>
@@ -10,6 +11,16 @@ class AnimatedCreature;
 class StaticCreature;
 class Trashcan;
 
+class Tile
+{
+public:
+	char symbol;
+	olc::vi2d n_pos;
+	olc::vi2d size = { PX_TILE_SIZE_X, PX_TILE_SIZE_Y };
+
+	Tile();
+	Tile(char tile_symbol, olc::vi2d tile_pos);
+};
 
 struct TileSpriteSheets
 {
@@ -46,18 +57,6 @@ struct AnimatedCreatureSurroundingTiles
 	Tile bottom_tile_right;
 };
 
-
-class Tile
-{
-public:
-	char symbol;
-	olc::vi2d n_pos;
-	olc::vi2d size = { PX_TILE_SIZE_X, PX_TILE_SIZE_Y };
-
-	Tile();
-	Tile(char tile_symbol, olc::vi2d tile_pos);
-};
-
 struct Level
 {
 public:
@@ -65,7 +64,7 @@ public:
 	olc::vf2d player_init_position;
 
 private:
-	std::vector<std::unique_ptr<Trashcan>> trashcans;
+	//std::vector<std::unique_ptr<Trashcan>> trashcans;
 public:
 	Level();
 	std::vector<Tile> get_tiles_with_symbol(char symbol);

@@ -4,7 +4,6 @@
 #include "animation.h"
 #include "player.h"
 #include "camera.h"
-#include "creature.h"
 #include "config.h"
 #include <experimental/filesystem>
 

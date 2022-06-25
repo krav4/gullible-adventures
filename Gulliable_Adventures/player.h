@@ -2,8 +2,7 @@
 #include "olcPixelGameEngine.h"
 #include "animation.h"
 #include "config.h"
-#include "level_designs.h"
-#include "creature.h"
+#include "level.h"
 #include <unordered_map>
 constexpr float player_walk_flip_offset = 1.0f;
 constexpr float player_walk_speed = 6.0f;
