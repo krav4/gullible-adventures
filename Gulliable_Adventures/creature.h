@@ -7,6 +7,8 @@
 #include <string.h>
 #include <unordered_map>
 
+constexpr int default_creature_hp = 30;
+
 //// forward declaring some classes
 class LevelDesigns;
 struct Level;
@@ -127,7 +129,7 @@ class AnimatedCreature : public Creature
 {
 public:
 	bool is_on_even_ground = false;
-	int health_points = 30;
+	int health_points = default_creature_hp;
 	bool is_pointing_right = true;
 	bool is_walking = false;
 	bool is_jumping = false;
@@ -144,6 +146,7 @@ public:
 	
 	AnimatedCreature(olc::PixelGameEngine* eng);
 	AnimatedCreature(const AnimatedCreature&);
+	virtual void reset_health_points(int new_hp = -1);
 	virtual void update_state(float fElapsedTime, olc::vf2d camera_offset) = 0;
 	virtual void update_surrounding_tiles(Level* current_level);
 	virtual bool check_next_to_symbol(char symbol);

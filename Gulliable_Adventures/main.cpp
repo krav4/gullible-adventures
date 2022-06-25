@@ -133,7 +133,7 @@ public:
 		player.get()->resolve_collisions(levels.get(), level_id);
 
 		/*--------------------------- FALLING TO DEATH ---------------------*/
-		if (player.get()->check_death_zone())
+		if (player.get()->check_death())
 		{
 			camera.draw_endgame();
 			if (GetKey(olc::Key::E).bPressed)
@@ -141,6 +141,7 @@ public:
 				player.get()->set_position(levels.get()->get_init_player_position(level_id));
 				player.get()->set_velocity({ 0.0f, 0.0f });
 				player.get()->is_dead = false;
+				player.get()->reset_health_points();
 			}
 		}
 		/*--------------------------- NPC INTERACTION  -----------------------*/

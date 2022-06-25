@@ -142,10 +142,11 @@ public:
 		pos_px = tile_to_px(pos, camera_offset);
 	}
 
-	bool check_death_zone()
+	bool check_death()
 	{
 		if ((tiles.bottom_tile_left.symbol == LEVEL_DESIGN_DEATH) ||
-			(tiles.bottom_tile_right.symbol == LEVEL_DESIGN_DEATH))
+			(tiles.bottom_tile_right.symbol == LEVEL_DESIGN_DEATH) ||
+			(health_points <= 0))
 		{
 			is_dead = true;
 			return true;
@@ -200,7 +201,19 @@ public:
 		return is_hit;
 	}
 
-	void draw(float fElapsedTime)
+	virtual void reset_health_points(int new_hp = -1) override
+	{
+		if (new_hp > 0)
+		{
+			health_points = new_hp;
+		}
+		else
+		{
+			health_points = player_health;
+		}
+	}
+
+	virtual void draw(float fElapsedTime) override
 	{
 		AnimationData adata;
 		SpriteAnimation* animation;

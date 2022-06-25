@@ -175,6 +175,18 @@ AnimatedCreature::AnimatedCreature(const AnimatedCreature& original) : Creature(
 
 }
 
+void AnimatedCreature::reset_health_points(int new_hp)
+{
+	if (new_hp > 0)
+	{
+		health_points = new_hp;
+	}
+	else
+	{
+		health_points = default_creature_hp;
+	}
+}
+
 void AnimatedCreature::update_surrounding_tiles(Level* current_level)
 {
 	tiles.right_tile_top = current_level->get_level_tile({ (int)(pos.x + 1.0f), (int)(pos.y) });
