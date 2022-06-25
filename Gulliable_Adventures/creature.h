@@ -150,7 +150,7 @@ public:
 	virtual void update_state(float fElapsedTime, olc::vf2d camera_offset) = 0;
 	virtual void update_surrounding_tiles(Level* current_level);
 	virtual bool check_next_to_symbol(char symbol);
-	virtual void resolve_collisions(LevelDesigns* levels, int level_id);
+	virtual bool resolve_collisions(LevelDesigns* levels, int level_id);
 };
 
 class Trashcan : public AnimatedCreature

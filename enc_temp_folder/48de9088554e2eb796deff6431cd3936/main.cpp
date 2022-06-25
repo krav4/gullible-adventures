@@ -192,25 +192,22 @@ public:
 			std::unique_ptr<Projectile> proj = player.get()->emit_projectile();
 			projectiles.push_back(std::move(proj));
 		}
-
-		// if we have any projectiles, we need to draw them or get rid of them to conserve memory
 		if (projectiles.size() > 0)
 		{
 			olc::vf2d proj_pos;
 			auto proj = projectiles.begin();
-			// iterating over the vector of shared pointers to the projectiles emitted by player
 			while (proj != projectiles.end())
 			{
 				proj_pos = proj->get()->get_f_tile_position();
 				proj->get()->update_surrounding_tiles(current_level);
-				// resolving collisions or getting out of bounds of the map results in deletion of the element
+				// remove odd numbers
 				if (proj->get()->resolve_collisions(levels.get(), level_id) || 
 					(int)proj_pos.x > LEVEL_DESIGN_N_TILES_X || (int)proj_pos.x < 0)
 				{
-					
+					// `erase()` invalidates the iterator, use returned iterator
 					proj = projectiles.erase(proj);
 				}
-				// otherwise, update the projectile state, and draw
+				// Notice that the iterator is incremented only on the else part (why?)
 				else {
 					proj->get()->update_state(fElapsedTime, camera.get_f_tile_offset());
 					proj->get()->draw(fElapsedTime);

@@ -185,6 +185,7 @@ void AnimatedCreature::reset_health_points(int new_hp)
 	{
 		health_points = default_creature_hp;
 	}
+	vel = { 0.0f, 0.0f };
 }
 
 void AnimatedCreature::update_surrounding_tiles(Level* current_level)
@@ -226,17 +227,18 @@ bool AnimatedCreature::check_next_to_symbol(char symbol)
 	}
 }
 
-void AnimatedCreature::resolve_collisions(LevelDesigns* levels, int level_id)
+bool AnimatedCreature::resolve_collisions(LevelDesigns* levels, int level_id)
 {
 	// resolve collisions, making sure the tiles are not any of the static creatures
 	// if they are static creatures, we should make sure we dont resolve collisions
-
+	bool ret = false;
 	if ((is_tile_solid(&tiles.right_tile_top, levels) || (is_tile_solid(&tiles.right_tile_bottom, levels))))
 	{
 		if ((pos.x + 1.0f) > tiles.right_tile_top.n_pos.x)
 		{
 			pos.x = int(pos.x);
 		}
+		ret = true;
 	}
 	if ((is_tile_solid(&tiles.left_tile_top, levels) || (is_tile_solid(&tiles.left_tile_bottom, levels))))
 	{
@@ -244,6 +246,7 @@ void AnimatedCreature::resolve_collisions(LevelDesigns* levels, int level_id)
 		{
 			pos.x = int(pos.x + 1.0f);
 		}
+		ret = true;
 	}
 
 	if ((is_tile_solid(&tiles.bottom_tile_left, levels) || (is_tile_solid(&tiles.bottom_tile_right, levels))))
@@ -252,11 +255,13 @@ void AnimatedCreature::resolve_collisions(LevelDesigns* levels, int level_id)
 		pos.y = int(pos.y);
 		is_on_even_ground = true;
 		vel.y = 0;
+		ret = true;
 	}
 	else
 	{
 		is_on_even_ground = false;
 	}
+	return ret;
 }
 
 Trashcan::Trashcan(olc::PixelGameEngine* eng, TrashCanSpriteSheets* spriteSheets, int patrol_limit) : AnimatedCreature(eng)

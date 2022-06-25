@@ -3,6 +3,7 @@
 #include "animation.h"
 #include "config.h"
 #include "level.h"
+#include "projectile.h"
 #include <unordered_map>
 constexpr float player_walk_flip_offset = 1.0f;
 constexpr float player_walk_speed = 6.0f;
@@ -48,11 +49,18 @@ private:
 	olc::vf2d hit_velocity = {0.0f, 0.0f};
 	float hit_timer = 0.0f;
 
+	std::string proj_spritesheet;
+	std::unique_ptr<Projectile>  projectile;
+
+	std::unique_ptr<olc::Sprite> proj_sprite;
+	std::unique_ptr < olc::Decal> proj_decal;
+
 public:
-	Player(olc::PixelGameEngine * engine_input, PlayerSpriteSheets * spriteSheets) : AnimatedCreature(engine_input)
+	Player(olc::PixelGameEngine * engine_input, PlayerSpriteSheets * spriteSheets, std::string projectile_spritesheet) : AnimatedCreature(engine_input)
 	{
 		name = "Gully";
 		health_points = player_health;
+		
 		scale = { player_scale, player_scale };
 		dims.x = spriteSheets->px_width;
 		dims.y = spriteSheets->px_height;
@@ -68,6 +76,10 @@ public:
 	
 		death_sprite = std::make_unique<olc::Sprite>(spriteSheets->death_spritesheet);
 		death_decal = std::make_unique<olc::Decal>(death_sprite.get());
+
+		proj_spritesheet = projectile_spritesheet;
+		proj_sprite = std::make_unique<olc::Sprite>(proj_spritesheet);
+		proj_decal = std::make_unique<olc::Decal>(proj_sprite.get());
 	}
 
 	virtual void update_state(float fElapsedTime, olc::vf2d camera_offset) override
@@ -199,6 +211,28 @@ public:
 			hit_timer = hit_draw_timer;
 		}
 		return is_hit;
+	}
+
+	std::unique_ptr<Projectile> emit_projectile()
+	{
+		olc::vf2d proj_vel;
+		olc::vf2d proj_pos;
+		projectile = std::make_unique<Projectile>(engine, proj_decal.get());
+
+		proj_pos.x = pos.x;
+		proj_pos.y = pos.y - 1.0f;
+		proj_vel.y = 0.0f;
+		projectile->set_position(proj_pos);
+		if (is_pointing_right)
+		{
+			proj_vel.x += projectile_velocity;
+		}
+		else
+		{
+			proj_vel.x -= projectile_velocity;
+		}
+		projectile->set_velocity(proj_vel);
+		return std::move(projectile);
 	}
 
 	virtual void reset_health_points(int new_hp = -1) override
