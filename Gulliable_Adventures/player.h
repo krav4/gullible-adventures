@@ -8,7 +8,10 @@ constexpr float player_walk_flip_offset = 1.0f;
 constexpr float player_walk_speed = 6.0f;
 constexpr float player_walk_animation_interval = 0.02f;
 constexpr float player_scale = 0.5f;
-constexpr float player_jump_impulse_duration = 0.2f;
+constexpr float player_jump_impulse_duration = 0.08f;
+constexpr float player_jump_speed = -22.0f;
+constexpr int player_health = 50;
+constexpr float hit_draw_timer = 0.2f;
 
 struct PlayerSpriteSheets
 {
@@ -28,6 +31,7 @@ class Player : public AnimatedCreature
 public:
 	
 	float walk_speed = player_walk_speed;
+	bool is_hit = false;
 
 private:
 	float walk_flip_offset = 0.0f;
@@ -41,11 +45,14 @@ private:
 	std::unique_ptr<olc::Decal> death_decal;
 	float jumping_impulse_remaining_time = player_jump_impulse_duration;
 	int standing_tile = 0;
+	olc::vf2d hit_velocity = {0.0f, 0.0f};
+	float hit_timer = 0.0f;
 
 public:
 	Player(olc::PixelGameEngine * engine_input, PlayerSpriteSheets * spriteSheets) : AnimatedCreature(engine_input)
 	{
 		name = "Gully";
+		health_points = player_health;
 		scale = { player_scale, player_scale };
 		dims.x = spriteSheets->px_width;
 		dims.y = spriteSheets->px_height;
@@ -69,22 +76,21 @@ public:
 		{
 			return;
 		}
-		if (engine->GetKey(olc::Key::LEFT).bHeld)
+		if (engine->GetKey(olc::Key::LEFT).bHeld && !is_hit)
 		{
 			is_pointing_right = false;
 			is_walking = true;
-			vel = { -walk_speed, 0 };
+			vel = { -walk_speed, vel.y };
 		}
-		else if (engine->GetKey(olc::Key::RIGHT).bHeld)
+		else if (engine->GetKey(olc::Key::RIGHT).bHeld && !is_hit)
 		{
 			is_pointing_right = true;
 			is_walking = true;
-			vel = { walk_speed, 0 };
+			vel = { walk_speed, vel.y };
 		}
 		else
 		{
-			is_walking = false;
-			vel = { 0.0f, 0.0f };		
+			is_walking = false;	
 		}
 
 		if (engine->GetKey(olc::Key::UP).bPressed && (is_on_even_ground))
@@ -107,7 +113,7 @@ public:
 			{
 				// we are still under the impulse, keep decrementing impulse time and 
 				// make sure that velocity is going up
-				vel.y = -25.0f;
+				vel.y = player_jump_speed;
 				jumping_impulse_remaining_time -= fElapsedTime;
 			}
 		}
@@ -117,6 +123,17 @@ public:
 			vel.y += gravity * fElapsedTime;
 		}
 
+		if (!is_walking && is_on_even_ground && !is_hit)
+		{
+			vel = { 0.0f, 0.0f };
+		}
+		if (is_hit)
+		{
+			// calculating velocity for blowback from the enemy
+			health_points--;
+			vel = hit_velocity * 10.0f;
+			is_hit = false;
+		}
 		// kinematics, pffffff
 		pos += vel * fElapsedTime;
 		
@@ -163,11 +180,32 @@ public:
 		}
 	}
 
+	bool check_hitbox(AnimatedCreature* creature)
+	{
+		olc::vf2d creature_pos = creature->get_f_tile_position();
+		if ((pos.x + 1.1f > creature_pos.x && pos.x < creature_pos.x + 1.1f) &&
+			(pos.y + 1.0f > creature_pos.y))
+		{
+
+			is_hit = true;
+			hit_velocity = { pos.x - creature_pos.x, pos.y - creature_pos.y};
+			if (hit_velocity.y > -0.1f)
+			{
+				hit_velocity.y = -0.5f;
+			}
+			hit_velocity = hit_velocity.norm();
+			// set hit timer for drawing red tint over the decal
+			hit_timer = hit_draw_timer;
+		}
+		return is_hit;
+	}
+
 	void draw(float fElapsedTime)
 	{
 		AnimationData adata;
 		SpriteAnimation* animation;
 		olc::Decal* draw_decal;
+		
 		if (!is_pointing_right)
 		{
 			animation = walk_left_animation.get();
@@ -194,7 +232,15 @@ public:
 		}
 		else
 		{
-			engine->DrawPartialDecal(pos_px, draw_decal, adata.sourcePos, adata.sourceSize, scale);
+			if (hit_timer > 0.0f)
+			{
+				engine->DrawPartialDecal(pos_px, draw_decal, adata.sourcePos, adata.sourceSize, scale, olc::RED);
+				hit_timer -= fElapsedTime;
+			}
+			else
+			{
+				engine->DrawPartialDecal(pos_px, draw_decal, adata.sourcePos, adata.sourceSize, scale);
+			}
 		}
 	}
 };

@@ -124,7 +124,7 @@ public:
 		camera.set_center_position(player.get()->get_f_tile_position());
 		// draw all the level tiles
 		camera.draw_level_scene(level_id, fElapsedTime);
-
+		camera.draw_health_bar(player.get());
 
 		/*--------------------------- UPDATING PLAYER STATE -----------------------*/
 		// update player state to new
@@ -178,6 +178,10 @@ public:
 			trashcan.update_surrounding_tiles(current_level);
 			trashcan.resolve_collisions(levels.get(), level_id);
 			trashcan.draw(fElapsedTime);
+			if (player.get()->check_hitbox(&trashcan))
+			{
+				DrawString(player.get()->get_px_position(), "ENEMY NEARBY");
+			}
 		}
 		
 		/*--------------------------- DRAWING THE PLAYER -----------------------*/

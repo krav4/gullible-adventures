@@ -96,44 +96,38 @@ public:
 	olc::vi2d level_tile_pos;
 	std::unique_ptr<olc::Decal> decal;
 	std::unique_ptr<olc::Sprite> sprite;
+private:
 
+	int m_interaction_id = 0;
+	int m_dialogue_id = 0;
+	bool m_is_interacting = false;
+protected:
+	std::vector<std::vector<std::string>> interactions;
 public:
 	StaticCreature();
 	StaticCreature(olc::PixelGameEngine* engine, const SpriteConfig* config, std::string name_input);
+	void increment_interaction();
+	void increment_dialogue();
+	int get_dialogue_id();
+	int get_interaction_id();
+	void set_interaction_status(bool is_interacting);
+	bool get_interaction_status();
+	std::string get_dialogue();
 	virtual void draw(float fElapsedTime) override;
 };
 
 class Lupi : public StaticCreature
 {
-private:
-	std::vector<std::vector<std::string>> interactions;
-	int m_interaction_id = 0;
-	int m_dialogue_id = 0;
-	bool m_is_interacting = false;
+
 public:
 	Lupi(olc::PixelGameEngine* engine, const SpriteConfig* config, std::string name_input);
-
-	void increment_interaction();
-
-	void increment_dialogue();
-
-	int get_dialogue_id();
-
-	int get_interaction_id();
-
-	void set_interaction_status(bool is_interacting);
-
-	bool get_interaction_status();
-
-	std::string get_dialogue();
-
 };
 
 class AnimatedCreature : public Creature
 {
 public:
 	bool is_on_even_ground = false;
-	int health_points = 3;
+	int health_points = 30;
 	bool is_pointing_right = true;
 	bool is_walking = false;
 	bool is_jumping = false;

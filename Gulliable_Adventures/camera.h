@@ -79,6 +79,14 @@ public:
 		eng->DrawString({ px_display_center.x - 500, px_display_center.y + 100 }, "Press E to Continue...", olc::VERY_DARK_RED, 2);
 	}
 
+	void draw_health_bar(Player* player)
+	{
+		int barsize = player->health_points * 10;
+		eng->FillRect({ 20,20 }, { barsize, 10 }, olc::RED);
+
+	}
+		
+
 	void draw_level_scene(int level_id, float fElapsedTime)
 	{
 		Level* current_level = ldesigns->get_level(level_id);
