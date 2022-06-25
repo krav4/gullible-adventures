@@ -85,6 +85,55 @@ StaticCreature::StaticCreature(olc::PixelGameEngine* engine, const SpriteConfig*
 	decal = std::make_unique<olc::Decal>(sprite.get());
 }
 
+void StaticCreature::increment_interaction()
+{
+	m_interaction_id++;
+}
+
+void StaticCreature::increment_dialogue()
+{
+	m_dialogue_id++;
+}
+
+int StaticCreature::get_dialogue_id()
+{
+	return m_dialogue_id;
+}
+
+int StaticCreature::get_interaction_id()
+{
+	return m_interaction_id;
+}
+
+void StaticCreature::set_interaction_status(bool is_interacting)
+{
+	m_is_interacting = is_interacting;
+}
+
+bool StaticCreature::get_interaction_status()
+{
+	return m_is_interacting;
+}
+
+std::string StaticCreature::get_dialogue()
+{
+	m_is_interacting = true;
+	// this means we exhausted all dialogue for that interaction
+	if (m_dialogue_id >= interactions[m_interaction_id].size())
+	{
+		m_is_interacting = false;
+		// reset the dialogue id back to first element
+		m_dialogue_id = 0;
+		return "";
+	}
+	else
+	{
+		std::string ret = interactions[m_interaction_id][m_dialogue_id];
+		m_dialogue_id++;
+		return ret;
+	}
+
+}
 void StaticCreature::draw(float fElapsedTime)
 {
 	engine->DrawDecal(pos_px, decal.get(), scale);
@@ -112,55 +161,6 @@ Lupi::Lupi(olc::PixelGameEngine* engine, const SpriteConfig* config, std::string
 	interactions.push_back(initial_interaction);
 };
 
-void Lupi::increment_interaction()
-{
-	m_interaction_id++;
-}
-
-void Lupi::increment_dialogue()
-{
-	m_dialogue_id++;
-}
-
-int Lupi::get_dialogue_id()
-{
-	return m_dialogue_id;
-}
-
-int Lupi::get_interaction_id()
-{
-	return m_interaction_id;
-}
-
-void Lupi::set_interaction_status(bool is_interacting)
-{
-	m_is_interacting = is_interacting;
-}
-
-bool Lupi::get_interaction_status()
-{
-	return m_is_interacting;
-}
-
-std::string Lupi::get_dialogue()
-{
-	m_is_interacting = true;
-	// this means we exhausted all dialogue for that interaction
-	if (m_dialogue_id >= interactions[m_interaction_id].size())
-	{
-		m_is_interacting = false;
-		// reset the dialogue id back to first element
-		m_dialogue_id = 0;
-		return "";
-	}
-	else
-	{
-		std::string ret = interactions[m_interaction_id][m_dialogue_id];
-		m_dialogue_id++;
-		return ret;
-	}
-
-}
 
 AnimatedCreature::AnimatedCreature() 
 {
@@ -174,8 +174,6 @@ AnimatedCreature::AnimatedCreature(const AnimatedCreature& original) : Creature(
 {
 
 }
-
-
 
 void AnimatedCreature::update_surrounding_tiles(Level* current_level)
 {
