@@ -1,6 +1,6 @@
 #pragma once
 #include "olcPixelGameEngine.h"
-#include "level_designs.h"
+#include "level.h"
 
 class Camera
 {
@@ -111,6 +111,10 @@ public:
 
 				case LEVEL_DESIGN_EXIT:
 					eng->DrawDecal(px_tile_pos, ldesigns->get_exit_decal());
+					break;
+
+				case LEVEL_DESIGN_TRASHCAN:
+					// draw empty space in place of trashcan for the level rendering
 					break;
 
 				case LEVEL_DESIGN_DEATH:
