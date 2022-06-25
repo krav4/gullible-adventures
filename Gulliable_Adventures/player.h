@@ -11,8 +11,10 @@ constexpr float player_walk_animation_interval = 0.02f;
 constexpr float player_scale = 0.5f;
 constexpr float player_jump_impulse_duration = 0.08f;
 constexpr float player_jump_speed = -22.0f;
-constexpr int player_health = 50;
+constexpr int player_health = 30;
 constexpr float hit_draw_timer = 0.2f;
+constexpr float projectile_emission_timer = 0.5f;
+
 
 struct PlayerSpriteSheets
 {
@@ -33,6 +35,7 @@ public:
 	
 	float walk_speed = player_walk_speed;
 	bool is_hit = false;
+	float m_proj_emission_timer = projectile_emission_timer;
 
 private:
 	float walk_flip_offset = 0.0f;
@@ -149,9 +152,11 @@ public:
 		// kinematics, pffffff
 		pos += vel * fElapsedTime;
 		
-
 		// update pixel position based on tiles
 		pos_px = tile_to_px(pos, camera_offset);
+
+		// decrement projectile emission timer
+		m_proj_emission_timer -= fElapsedTime;
 	}
 
 	bool check_death()
@@ -195,6 +200,11 @@ public:
 
 	bool check_hitbox(AnimatedCreature* creature)
 	{
+		if (creature->is_dead)
+		{
+			// ignore hitbox if offending creature is dead
+			return false;
+		}
 		olc::vf2d creature_pos = creature->get_f_tile_position();
 		if ((pos.x + 1.1f > creature_pos.x && pos.x < creature_pos.x + 1.1f) &&
 			(pos.y + 1.0f > creature_pos.y))
@@ -217,8 +227,14 @@ public:
 	{
 		olc::vf2d proj_vel;
 		olc::vf2d proj_pos;
+		
+		if (m_proj_emission_timer >= 0)
+		{
+			// dont emit anything if the time is not right
+			return nullptr;
+		}
+		
 		projectile = std::make_unique<Projectile>(engine, proj_decal.get());
-
 		proj_pos.x = pos.x;
 		proj_pos.y = pos.y - 1.0f;
 		proj_vel.y = 0.0f;
@@ -232,6 +248,7 @@ public:
 			proj_vel.x -= projectile_velocity;
 		}
 		projectile->set_velocity(proj_vel);
+		m_proj_emission_timer = projectile_emission_timer;
 		return std::move(projectile);
 	}
 

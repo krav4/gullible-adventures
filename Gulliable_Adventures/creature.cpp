@@ -294,6 +294,8 @@ void Trashcan::create_decals()
 	walk_left_animation = std::make_unique<SpriteAnimation>();
 	walk_left_animation->SetParams(animation_interval, walk_left_sprite->width, walk_left_sprite->height, m_spritesheets.walk_tile_cols, m_spritesheets.walk_tile_rows, m_spritesheets.walk_tile_count);
 
+	death_sprite = std::make_unique<olc::Sprite>(m_spritesheets.dead_spritesheet);
+	death_decal = std::make_unique<olc::Decal>(death_sprite.get());
 }
 
 void Trashcan::update_state(float fElapsedTime, olc::vf2d camera_offset)
@@ -314,7 +316,11 @@ void Trashcan::update_state(float fElapsedTime, olc::vf2d camera_offset)
 	{
 		vel.y += 100.0f * fElapsedTime;
 	}
-
+	if (is_dead)
+	{
+		// if we are dead, override the velocity
+		vel = { 0.0f, 0.0f };
+	}
 	// kinematics
 	pos += vel * fElapsedTime;
 	pos_px = tile_to_px(pos, camera_offset);
@@ -327,6 +333,20 @@ void Trashcan::update_state(float fElapsedTime, olc::vf2d camera_offset)
 	else if (tiles.bottom_tile_left.symbol == LEVEL_DESIGN_EMPTY && !is_pointing_right)
 	{
 		is_pointing_right = true;
+	}
+}
+
+bool Trashcan::register_hit()
+{
+	health_points--;
+	if (health_points <= 0)
+	{
+		is_dead = true;
+		return true;
+	}
+	else
+	{
+		return false;
 	}
 }
 
@@ -347,6 +367,15 @@ void Trashcan::draw(float fElapsedTime)
 		draw_decal = walk_left_decal.get();
 	}
 
-	adata = animation->GetInfo(fElapsedTime);
-	engine->DrawPartialDecal(pos_px, draw_decal, adata.sourcePos, adata.sourceSize, scale);
+	if (is_dead)
+	{
+		engine->DrawDecal(pos_px, death_decal.get(), scale);
+	}
+	else
+	{
+		adata = animation->GetInfo(fElapsedTime);
+		engine->DrawPartialDecal(pos_px, draw_decal, adata.sourcePos, adata.sourceSize, scale);
+		engine->FillRect(pos_px, { health_points * 25, 4 }, olc::RED);
+	}
+
 }

@@ -64,6 +64,7 @@ public:
 		trashcan_spritesheets.px_width = PX_TILE_SIZE_Y;
 		trashcan_spritesheets.walk_left_spritesheet = "resource/trashcan_walk_left.png";
 		trashcan_spritesheets.walk_right_spritesheet = "resource/trashcan_walk_left.png";
+		trashcan_spritesheets.dead_spritesheet = "resource/trashcan_dead.png";
 		trashcan_spritesheets.walk_tile_cols = 4;
 		trashcan_spritesheets.walk_tile_rows = 1;
 		trashcan_spritesheets.walk_tile_count = 4;
@@ -168,6 +169,7 @@ public:
 			{
 				level_id++;
 				player.get()->set_position(levels.get()->get_init_player_position(level_id));
+				player.get()->reset_health_points();
 			}
 		}
 
@@ -190,8 +192,13 @@ public:
 		if (GetKey(olc::Key::SPACE).bPressed)
 		{
 			std::unique_ptr<Projectile> proj = player.get()->emit_projectile();
-			projectiles.push_back(std::move(proj));
+			// will return nullptr if time is not right
+			if (proj != nullptr)
+			{
+				projectiles.push_back(std::move(proj));
+			}
 		}
+		/*--------------------------- RESOLVING/MANAGING PROJECTILES (GOD ITS HARD) -----------------------*/
 
 		// if we have any projectiles, we need to draw them or get rid of them to conserve memory
 		if (projectiles.size() > 0)
@@ -204,16 +211,28 @@ public:
 				proj_pos = proj->get()->get_f_tile_position();
 				proj->get()->update_surrounding_tiles(current_level);
 				// resolving collisions or getting out of bounds of the map results in deletion of the element
+				// also, if we hit the enemy already with the projectile, we delete it
 				if (proj->get()->resolve_collisions(levels.get(), level_id) || 
-					(int)proj_pos.x > LEVEL_DESIGN_N_TILES_X || (int)proj_pos.x < 0)
+					(int)proj_pos.x > LEVEL_DESIGN_N_TILES_X || 
+					(int)proj_pos.x < 0 || 
+					proj->get()->is_enemy_hit)
 				{
-					
 					proj = projectiles.erase(proj);
 				}
 				// otherwise, update the projectile state, and draw
 				else {
 					proj->get()->update_state(fElapsedTime, camera.get_f_tile_offset());
+					//check if we hit any trashcans
+					for (auto& trashcan : *trashcans)
+					{
+						if (proj->get()->check_hit_enemy(&trashcan))
+						{
+							// this decrements health and marks death status if health  is 0
+							trashcan.register_hit();
+						}
+					}
 					proj->get()->draw(fElapsedTime);
+					// only increment iterator if we didnt delete
 					++proj;
 				}
 			}

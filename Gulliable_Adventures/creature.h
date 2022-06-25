@@ -42,6 +42,7 @@ struct TrashCanSpriteSheets
 {
 	std::string walk_right_spritesheet;
 	std::string walk_left_spritesheet;
+	std::string dead_spritesheet;
 	int walk_tile_count;
 	int walk_tile_rows;
 	int walk_tile_cols;
@@ -143,7 +144,6 @@ private:
 	virtual bool is_tile_solid(Tile* tile, LevelDesigns* levels);
 public:
 	AnimatedCreature();
-	
 	AnimatedCreature(olc::PixelGameEngine* eng);
 	AnimatedCreature(const AnimatedCreature&);
 	virtual void reset_health_points(int new_hp = -1);
@@ -161,9 +161,11 @@ private:
 
 	std::unique_ptr<olc::Sprite> walk_right_sprite;
 	std::unique_ptr<olc::Sprite> walk_left_sprite;
+	std::unique_ptr<olc::Sprite> death_sprite;
 
 	std::unique_ptr<olc::Decal> walk_right_decal;
 	std::unique_ptr<olc::Decal> walk_left_decal;
+	std::unique_ptr<olc::Decal> death_decal;
 
 	TrashCanSpriteSheets m_spritesheets;
 
@@ -177,7 +179,7 @@ private:
 public:
 	Trashcan(olc::PixelGameEngine* eng, TrashCanSpriteSheets* spriteSheets, int patrol_limit = 100);
 	Trashcan(const Trashcan& original);
-
+	bool register_hit();
 	virtual void update_state(float fElapsedTime, olc::vf2d camera_offset) override;
 	virtual void draw(float fElapsedTime) override;
 };

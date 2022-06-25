@@ -3,10 +3,11 @@
 
 constexpr float projectile_velocity = 10.0f;
 class Projectile : public AnimatedCreature
-{
+{	
 public:
 	std::string spritesheet;
 	olc::Decal* decal;
+	bool is_enemy_hit = false;
 
 	Projectile(olc::PixelGameEngine * eng, olc::Decal * decal_ptr) : AnimatedCreature(eng)
 	{
@@ -16,11 +17,17 @@ public:
 
 	bool check_hit_enemy(AnimatedCreature * creature)
 	{
+		if (creature->is_dead)
+		{
+			// dont care about hitting enemy if enemy is dead already
+			return false;
+		}
 		olc::vf2d creature_pos = creature->get_f_tile_position();
 		if ((pos.x + 0.7f > creature_pos.x && pos.x < creature_pos.x + 0.7f) &&
-			(pos.y + 0.7f > creature_pos.y))
+			(pos.y + 1.1f > creature_pos.y && pos.y < creature_pos.y + 1.1f))
 		{
-
+			// signal the code that we should get rid of the projectile
+			is_enemy_hit = true;
 			return true;
 		}
 		else
