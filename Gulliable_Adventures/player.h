@@ -187,20 +187,20 @@ public:
 		}
 	}
 
-	char check_next_to_static_creature()
+	char check_next_to_static_creature(LevelDesigns * levels)
 	{
-		if (check_next_to_symbol(LEVEL_DESIGN_LUPI))
+		char ret = ' ';
+		for (auto& npc : levels->static_creatures)
 		{
-			return LEVEL_DESIGN_LUPI;
+			// first is the character symbol
+			if (check_next_to_symbol(npc.first))
+			{
+				ret = npc.first;
+				break;
+			}
 		}
-		else if (check_next_to_symbol(LEVEL_DESIGN_LIZZIE))
-		{
-			return LEVEL_DESIGN_LIZZIE;
-		}
-		else
-		{
-			return ' ';
-		}
+		return ret;
+		
 	}
 
 	bool check_next_to_exit()

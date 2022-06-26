@@ -24,6 +24,7 @@ private:
 	std::unique_ptr<LevelDesigns> levels;
 	std::unique_ptr<Lupi> lupi;
 	std::unique_ptr<Lizzie> lizzie;
+	std::unique_ptr<Dad> dad;
 	std::unique_ptr<Trashcan> trashcan_demo;
 
 	bool is_game_started = false;
@@ -88,16 +89,23 @@ public:
 		lizzieConfig.dims = { PX_TILE_SIZE_X, PX_TILE_SIZE_Y };
 		lizzieConfig.scale = { 0.5, 0.5 };
 
+		SpriteConfig dadConfig;
+		dadConfig.image_name = "resource/dad.png";
+		dadConfig.dims = { PX_TILE_SIZE_X, PX_TILE_SIZE_Y };
+		dadConfig.scale = { 0.5, 0.5 };
+
 		std::string projectile_spritesheet = "resource/projectile.png";
 
 		player = std::make_unique<Player>(this, &pSpriteSheets, projectile_spritesheet);
 
 		lupi = std::make_unique<Lupi>(this, &lupiConfig, "Lupi");
 		lizzie = std::make_unique<Lizzie>(this, &lizzieConfig, "Lizzie");
+		dad = std::make_unique<Dad>(this, &dadConfig, "Dad");
 
 		levels = std::make_unique<LevelDesigns>(this, &tile_spritesheets, &trashcan_spritesheets);
 		levels.get()->set_static_creature('L', lupi.get());
 		levels.get()->set_static_creature('Z', lizzie.get());
+		levels.get()->set_static_creature('A', dad.get());
 
 		player.get()->set_position({ 0.0f, 1.0f });
 		player.get()->set_velocity({ 0.0f, 0.0f });
@@ -115,7 +123,7 @@ public:
 		Level* current_level = levels.get()->get_level(level_id);
 		StaticCreature* interacting_creature = nullptr;
 		std::vector<Trashcan>* trashcans = current_level->get_trashcans();
-		char nearby_creature = player.get()->check_next_to_static_creature();
+		char nearby_creature = player.get()->check_next_to_static_creature(levels.get());
 
 		/** ------------------------- WELCOME SCREEN ----------------------*/
 		if (!is_game_started)
@@ -164,6 +172,7 @@ public:
 		}
 		/*--------------------------- NPC INTERACTION  -----------------------*/
 		
+		// TODO: switch would be better
 		if (nearby_creature == LEVEL_DESIGN_LUPI)
 		{
 			interacting_creature = lupi.get();
@@ -172,14 +181,21 @@ public:
 		{
 			interacting_creature = lizzie.get();
 		}
+		else if (nearby_creature == LEVEL_DESIGN_DAD)
+		{
+			interacting_creature = dad.get();
+		}
 		else
 		{
 			// reset creature dialogue
 			creature_dialogue = "";
-			lupi.get()->reset_dialogue();
-			lupi.get()->set_interaction_status(false);
-			lizzie.get()->reset_dialogue();
-			lizzie.get()->set_interaction_status(false);
+			// set all static creature interactions to false
+			// reset the dialogue ids
+			for (auto& npc : levels.get()->static_creatures)
+			{
+				npc.second->reset_dialogue();
+				npc.second->set_interaction_status(false);
+			}
 		}
 		
 		if (interacting_creature != nullptr)

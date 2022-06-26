@@ -476,3 +476,11 @@ bool Lizzie::is_giving_weapon_to_player()
 		return false;
 	}
 }
+
+Dad::Dad(olc::PixelGameEngine* engine, const SpriteConfig* config, std::string name_input) : StaticCreature(engine, config, name_input)
+{
+	name = "Dad";
+	std::vector<std::string> initial_interaction;
+	initial_interaction.push_back("Hey! Hope you had a safe journey!");
+	interactions.push_back(initial_interaction);
+};
