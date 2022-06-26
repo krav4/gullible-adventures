@@ -114,6 +114,8 @@ public:
 		SetPixelMode(olc::Pixel::MASK);
 		Level* current_level = levels.get()->get_level(level_id);
 		StaticCreature* interacting_creature = nullptr;
+		std::vector<Trashcan>* trashcans = current_level->get_trashcans();
+		char nearby_creature = player.get()->check_next_to_static_creature();
 
 		/** ------------------------- WELCOME SCREEN ----------------------*/
 		if (!is_game_started)
@@ -128,7 +130,7 @@ public:
 				DrawString({ 100 , 150 }, "Use Arrow Keys to move, E to interact!", olc::WHITE, 4);
 				DrawString({ 100 , 200 }, "Keep pressing E to exhaust dialogue!", olc::WHITE, 4);
 				DrawString({ 100 , 250 }, "Press UP to jump!", olc::WHITE, 4);
-				DrawString({ 100 , 300 }, "Press SPACE to attack!", olc::WHITE, 4);
+				DrawString({ 100 , 300 }, "Avoid TRASHCANS (initially)", olc::WHITE, 4);
 				DrawString({ 100 , 400 }, "Press E to continue...", olc::WHITE, 4);
 				player.get()->draw(fElapsedTime);
 			}
@@ -161,7 +163,7 @@ public:
 			}
 		}
 		/*--------------------------- NPC INTERACTION  -----------------------*/
-		char nearby_creature = player.get()->check_next_to_static_creature();
+		
 		if (nearby_creature == LEVEL_DESIGN_LUPI)
 		{
 			interacting_creature = lupi.get();
@@ -191,8 +193,16 @@ public:
 				interacting_creature->set_interaction_status(true);
 				// set the dialogue to whatever lupi has to say
 				creature_dialogue = interacting_creature->get_dialogue();
+				// lizzie has special interaction - we get a weapon at the end of her dialogue
+				if (interacting_creature->name == "Lizzie")
+				{
+					if (lizzie.get()->is_giving_weapon_to_player() && player.get()->m_has_projectile == false)
+					{
+						player.get()->give_projectile();
+					}
+				}
 			}
-			camera.draw_pop_up(creature_dialogue, interacting_creature->emit_text_position({ -100, -10 }));
+			camera.draw_pop_up(creature_dialogue, player->emit_text_position({ -50, -40 }));
 		}
 		
 		/*--------------------------- PROCEEDING TO NEXT LEVEL -----------------------*/
@@ -210,7 +220,7 @@ public:
 		/*--------------------------- DRAWING ENEMIES -----------------------*/
 
 		
-		std::vector<Trashcan> * trashcans = current_level->get_trashcans();
+		
 		for (auto& trashcan : *trashcans)
 		{
 			trashcan.update_state(fElapsedTime, camera.get_f_tile_offset());
@@ -233,7 +243,7 @@ public:
 			}
 		}
 		/*--------------------------- RESOLVING/MANAGING PROJECTILES (GOD ITS HARD) -----------------------*/
-
+		// should have maybe used a separate class of projectiles to handle this
 		// if we have any projectiles, we need to draw them or get rid of them to conserve memory
 		if (projectiles.size() > 0)
 		{

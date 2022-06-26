@@ -102,12 +102,11 @@ public:
 	olc::vi2d level_tile_pos;
 	std::unique_ptr<olc::Decal> decal;
 	std::unique_ptr<olc::Sprite> sprite;
-private:
 
+protected:
 	int m_interaction_id = 0;
 	int m_dialogue_id = 0;
 	bool m_is_interacting = false;
-protected:
 	std::vector<std::vector<std::string>> interactions;
 public:
 	StaticCreature();
@@ -195,6 +194,7 @@ class Lizzie : public StaticCreature
 
 public:
 	Lizzie(olc::PixelGameEngine* engine, const SpriteConfig* config, std::string name_input);
+	bool is_giving_weapon_to_player();
 };
 
 class Dad : public StaticCreature

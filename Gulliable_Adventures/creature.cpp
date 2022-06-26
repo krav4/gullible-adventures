@@ -416,16 +416,18 @@ Lupi::Lupi(olc::PixelGameEngine* engine, const SpriteConfig* config, std::string
 	initial_interaction.push_back("Hewo! \nIm Lupi!");
 	initial_interaction.push_back("I love DAD!");
 	initial_interaction.push_back("I HATE TRASHCANS!");
-	initial_interaction.push_back("I have a problem......");
-	initial_interaction.push_back("Would u help me? =3");
-	initial_interaction.push_back("See... my dad LOVES Virginia Chestnut Trees...");
-	initial_interaction.push_back("And I weally want to make him happy >:3 ");
-	initial_interaction.push_back("So I have to deliver to him the world's...");
-	initial_interaction.push_back("... last VIRGINIA CHESTNUT SEED!!! ");
+	initial_interaction.push_back("I have a problem......\n" \
+								  "Would u help me? =3");
+	initial_interaction.push_back(
+		"See... my DAD loves Virginia\n" \
+		"Chestnut Trees, and I weally \n" \
+		"want to make him happy >:3 ");
+	initial_interaction.push_back("So I have to give him the world's...\n" \
+		                          "LAST VIRGINIA CHESTNUT SEED!!! ");
 	initial_interaction.push_back("The way to DAD is very dangerous.. :c ");
-	initial_interaction.push_back("The entire path is FILLED with...");
-	initial_interaction.push_back("... the evil TRASHCANS >:O ");
-	initial_interaction.push_back("Take this SEED and deliver it to DAD!! ");
+	initial_interaction.push_back("The entire path is FILLED with \n"\
+		                          "the evil TRASHCANS >:O ");
+	initial_interaction.push_back("Take this SEED and deliver it to DAD!!");
 	initial_interaction.push_back("<LUPI GAVE YOU THE CHESTNUT SEED>");
 	initial_interaction.push_back("THENK U THENK U ok i go sweep now");
 	interactions.push_back(initial_interaction);
@@ -436,23 +438,41 @@ Lizzie::Lizzie(olc::PixelGameEngine* engine, const SpriteConfig* config, std::st
 {
 	name = "Lizzie";
 	std::vector<std::string> initial_interaction;
-	initial_interaction.push_back("Good afternoon! My full name is Wise Bean Lizzie.");
-	initial_interaction.push_back("I know everything and anything about these lands.");
-	initial_interaction.push_back("I heard you are helping my brother...\n" \
-								  "Thank you for that.");
+	initial_interaction.push_back("Good afternoon! My name is Wise Bean Lizzie.");
+	initial_interaction.push_back("I know everything about these lands.");
+	initial_interaction.push_back(
+		"I heard you are helping my brother...\n" \
+		"Thank you for that.");
 	initial_interaction.push_back("He can be a little...Slow....");
-	initial_interaction.push_back("I may be of help to your mission, dear lady. \n" \
-								 " I see my brother did not provide you with weapons.");
-	initial_interaction.push_back("Thats a shame...");
-	initial_interaction.push_back("However, I figured out a way to defeat them!\n"
-		"The secret weapon to defeat trashcans is...");
+	initial_interaction.push_back(
+		"I may be of help to your mission! \n" \
+		"I see my brother did not provide\n" \
+		"you with weapons...");
+	initial_interaction.push_back("Thats a shame!");
+	initial_interaction.push_back(
+		"However, I found a way to defeat them!\n"
+		"The secret to defeating the trashcans is...");
 	initial_interaction.push_back("PIZZA SLICES WITHOUT CRUST!!!");
-	initial_interaction.push_back("I have been collecting them a lot, since  \n"\
-								  "someone in my family only ever eats the crust");
+	initial_interaction.push_back(
+		"I have been collecting them a lot,   \n"\
+		"since someone in my family only \n" \
+		"ever eats the crust");
 	initial_interaction.push_back("Here, have some of them!");
-	initial_interaction.push_back("<LIZZE GAVE YOU PIZZA SLICES WITHOUT CRUST>");
-	initial_interaction.push_back("You can press SPACE to throw them at EVIL TRASHCANS. ");
+	initial_interaction.push_back("<LIZZE GAVE YOU PIZZA WITHOUT CRUST>");
+	initial_interaction.push_back("Press SPACE to throw them at TRASHCANS. ");
 	initial_interaction.push_back("I wish you all the best on your journey!");
 	initial_interaction.push_back("I hope you find what you seek...");
 	interactions.push_back(initial_interaction);
 };
+
+bool Lizzie::is_giving_weapon_to_player()
+{
+	if (m_interaction_id == 0 && (m_dialogue_id == (interactions[0].size() - 3)))
+	{
+		return true;
+	}
+	else
+	{
+		return false;
+	}
+}

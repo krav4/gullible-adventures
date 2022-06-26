@@ -16,6 +16,7 @@ constexpr float hit_draw_timer = 0.2f;
 constexpr float hit_register_timer = 0.4f;
 constexpr float projectile_emission_timer = 0.3f;
 constexpr float hit_velocity_multiplier = 12.0f;
+constexpr float player_sliding_friction = -7.0f;
 
 struct PlayerSpriteSheets
 {
@@ -37,6 +38,8 @@ public:
 	float walk_speed = player_walk_speed;
 	bool is_hit = false;
 	float m_proj_emission_timer = projectile_emission_timer;
+	// initially no projectile, cant use weapons
+	bool m_has_projectile = false;
 
 private:
 	float walk_flip_offset = 0.0f;
@@ -53,6 +56,8 @@ private:
 	olc::vf2d hit_velocity = {0.0f, 0.0f};
 	float m_hit_draw_timer = 0.0f;
 	float m_hit_register_timer = 0.0f;
+
+
 
 	std::string proj_spritesheet;
 	std::unique_ptr<Projectile>  projectile;
@@ -142,7 +147,13 @@ public:
 
 		if (!is_walking && is_on_even_ground && !is_hit)
 		{
-			vel = { 0.0f, 0.0f };
+			vel.y = 0.0f;
+			// adding "sliding" drag to the player 
+			vel.x += player_sliding_friction * vel.x * fElapsedTime;
+			if (abs(vel.x) <= 0.01f)
+			{
+				vel.x = 0.0f;
+			}
 		}
 		if (is_hit)
 		{
@@ -235,17 +246,27 @@ public:
 		return is_hit;
 	}
 
+	void give_projectile()
+	{
+		m_has_projectile = true;
+	}
+
 	std::unique_ptr<Projectile> emit_projectile()
 	{
-		olc::vf2d proj_vel;
-		olc::vf2d proj_pos;
+		if (!m_has_projectile)
+		{
+			return nullptr;
+		}
+		
 		
 		if (m_proj_emission_timer >= 0)
 		{
 			// dont emit anything if the time is not right
 			return nullptr;
 		}
-		
+
+		olc::vf2d proj_vel;
+		olc::vf2d proj_pos;
 		projectile = std::make_unique<Projectile>(engine, proj_decal.get());
 		proj_pos.x = pos.x;
 		proj_pos.y = pos.y;
