@@ -193,10 +193,15 @@ void AnimatedCreature::update_surrounding_tiles(Level* current_level)
 
 	tiles.right_tile_top = current_level->get_level_tile({ (int)(pos.x + 1.0f), (int)(pos.y) });
 	tiles.right_tile_bottom = current_level->get_level_tile({ (int)(pos.x + 1.0f), (int)(pos.y + 0.9f) });
+
 	tiles.left_tile_top = current_level->get_level_tile({ (int)(pos.x), (int)(pos.y) });
 	tiles.left_tile_bottom = current_level->get_level_tile({ (int)(pos.x), (int)(pos.y + 0.9f) });
+
 	tiles.bottom_tile_left = current_level->get_level_tile({ (int)(pos.x), (int)(pos.y + 1.0f) });
 	tiles.bottom_tile_right = current_level->get_level_tile({ (int)(pos.x + 0.9f), (int)(pos.y + 1.0f) });
+
+	tiles.top_tile_left = current_level->get_level_tile({ (int)(pos.x), (int)(pos.y) });
+	tiles.top_tile_right = current_level->get_level_tile({ (int)(pos.x + 0.9f), (int)(pos.y) });
 }
 
 bool AnimatedCreature::is_tile_solid(Tile* tile, LevelDesigns* levels)
@@ -228,39 +233,39 @@ bool AnimatedCreature::check_next_to_symbol(char symbol)
 	}
 }
 
-bool AnimatedCreature::resolve_collisions(LevelDesigns* levels, int level_id, bool resolve_ground)
+bool AnimatedCreature::resolve_collisions(LevelDesigns* levels, int level_id, bool resolve_ground, bool resolve_ceiling)
 {
 	// resolve collisions, making sure the tiles are not any of the static creatures
 	// if they are static creatures, we should make sure we dont resolve collisions
 	bool ret = false;
+	bool is_ceiling_resolved = false;
+	olc::vf2d new_pos = pos;
 	if (pos.y <= 0)
 	{
 		pos.y = 0;
-		ret = true;
-	}
-	if ((is_tile_solid(&tiles.right_tile_top, levels) || (is_tile_solid(&tiles.right_tile_bottom, levels))))
-	{
-		if ((pos.x + 1.0f) > tiles.right_tile_top.n_pos.x)
-		{
-			pos.x = int(pos.x);
-		}
-		ret = true;
-	}
-	if ((is_tile_solid(&tiles.left_tile_top, levels) || (is_tile_solid(&tiles.left_tile_bottom, levels))))
-	{
-		if ((pos.x) < tiles.left_tile_top.n_pos.x + 1.0f)
-		{
-			pos.x = int(pos.x + 1.0f);
-		}
-		ret = true;
+		return true;
 	}
 
-	if (resolve_ground)
+	if (vel.y < 0 && resolve_ceiling)
+	{
+		if ((is_tile_solid(&tiles.top_tile_left, levels) || (is_tile_solid(&tiles.top_tile_right, levels))))
+		{
+
+			new_pos.y = int(pos.y) + 1;
+			vel.y = 0.0f;
+			ret = true;
+			is_ceiling_resolved = true;
+		}
+
+	}
+
+	else if (vel.y >= 0 && resolve_ground)
 	{
 		if ((is_tile_solid(&tiles.bottom_tile_left, levels) || (is_tile_solid(&tiles.bottom_tile_right, levels))))
 		{
+
 			// set y velocity to 0
-			pos.y = int(pos.y);
+			new_pos.y = int(pos.y);
 			is_on_even_ground = true;
 			vel.y = 0;
 			ret = true;
@@ -270,7 +275,35 @@ bool AnimatedCreature::resolve_collisions(LevelDesigns* levels, int level_id, bo
 			is_on_even_ground = false;
 		}
 	}
+	// we dont want to be snapping the character if we already resolved ceiling
+	// janky way to do it but it works
+	if (vel.x >= 0.0f && !is_ceiling_resolved)
+	{
+		if ((is_tile_solid(&tiles.right_tile_top, levels) || (is_tile_solid(&tiles.right_tile_bottom, levels))))
+		{
+			if ((pos.x + 1.0f) > tiles.right_tile_top.n_pos.x)
+			{
+				new_pos.x = int(pos.x);
+				ret = true;
+			}
+		}
+	}
+	else if (vel.x < 0.0f && !is_ceiling_resolved)
+	{
+		if ((is_tile_solid(&tiles.left_tile_top, levels) || (is_tile_solid(&tiles.left_tile_bottom, levels))))
+		{
+			if ((pos.x) < tiles.left_tile_top.n_pos.x + 1.0f)
+			{
+				new_pos.x = int(pos.x + 1.0f);
+				ret = true;
+			}
 
+		}
+
+	}
+
+
+	pos = new_pos;
 	return ret;
 }
 
@@ -288,6 +321,7 @@ Trashcan::Trashcan(const Trashcan& original) : AnimatedCreature(original)
 	health_points = original.health_points;
 	animation_interval = original.animation_interval;
 	m_spritesheets = original.m_spritesheets;
+	hit_damage = original.hit_damage;
 	px_patrol_limit = original.px_patrol_limit;
 	create_decals();
 }

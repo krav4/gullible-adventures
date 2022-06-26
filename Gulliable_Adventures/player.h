@@ -13,8 +13,9 @@ constexpr float player_jump_impulse_duration = 0.02f;
 constexpr float player_jump_speed = -20.0f;
 constexpr int player_health = 30;
 constexpr float hit_draw_timer = 0.2f;
+constexpr float hit_register_timer = 0.4f;
 constexpr float projectile_emission_timer = 0.3f;
-
+constexpr float hit_velocity_multiplier = 12.0f;
 
 struct PlayerSpriteSheets
 {
@@ -50,7 +51,8 @@ private:
 	float jumping_impulse_remaining_time = player_jump_impulse_duration;
 	int standing_tile = 0;
 	olc::vf2d hit_velocity = {0.0f, 0.0f};
-	float hit_timer = 0.0f;
+	float m_hit_draw_timer = 0.0f;
+	float m_hit_register_timer = 0.0f;
 
 	std::string proj_spritesheet;
 	std::unique_ptr<Projectile>  projectile;
@@ -145,8 +147,7 @@ public:
 		if (is_hit)
 		{
 			// calculating velocity for blowback from the enemy
-			health_points--;
-			vel = hit_velocity * 10.0f;
+			vel = hit_velocity * hit_velocity_multiplier;
 			is_hit = false;
 		}
 		// kinematics, pffffff
@@ -156,7 +157,8 @@ public:
 		pos_px = tile_to_px(pos, camera_offset);
 
 		// decrement projectile emission timer
-		m_proj_emission_timer -= fElapsedTime;
+		if (m_proj_emission_timer >= 0.0f) m_proj_emission_timer -= fElapsedTime;
+		if (m_hit_register_timer >= 0.0f) m_hit_register_timer -= fElapsedTime;
 	}
 
 	bool check_death()
@@ -198,7 +200,7 @@ public:
 		}
 	}
 
-	bool check_hitbox(AnimatedCreature* creature)
+	bool check_hitbox(AnimatedCreature* creature, float fElapsedTime)
 	{
 		if (creature->is_dead)
 		{
@@ -206,10 +208,13 @@ public:
 			return false;
 		}
 		olc::vf2d creature_pos = creature->get_f_tile_position();
-		if ((pos.x + 1.1f > creature_pos.x && pos.x < creature_pos.x + 1.1f) &&
-			(pos.y + 1.0f > creature_pos.y))
+		// check if enemy is next to us, and check if the timer is 0
+		if ((pos.x + 1.0f > creature_pos.x && pos.x < creature_pos.x + 1.0f) &&
+			(pos.y + 1.0f > creature_pos.y) && (pos.y < creature_pos.y + 1.0f) && 
+			(m_hit_register_timer <= 0.0f))
 		{
-
+			// this flag is set for the update_state to take hit into account and change velocity
+			// since player velocity is managed in update_state
 			is_hit = true;
 			hit_velocity = { pos.x - creature_pos.x, pos.y - creature_pos.y};
 			if (hit_velocity.y > -0.1f)
@@ -217,8 +222,11 @@ public:
 				hit_velocity.y = -0.5f;
 			}
 			hit_velocity = hit_velocity.norm();
+			health_points -= creature->hit_damage;
 			// set hit timer for drawing red tint over the decal
-			hit_timer = hit_draw_timer;
+			m_hit_draw_timer = hit_draw_timer;
+			// set timer so that enemy doesnt hit every frame
+			m_hit_register_timer = hit_register_timer;
 		}
 		return is_hit;
 	}
@@ -296,10 +304,10 @@ public:
 		}
 		else
 		{
-			if (hit_timer > 0.0f)
+			if (m_hit_draw_timer > 0.0f)
 			{
 				engine->DrawPartialDecal(pos_px, draw_decal, adata.sourcePos, adata.sourceSize, scale, olc::RED);
-				hit_timer -= fElapsedTime;
+				m_hit_draw_timer -= fElapsedTime;
 			}
 			else
 			{

@@ -96,7 +96,7 @@ public:
 
 		camera = Camera(this, levels.get());
 		camera.set_center_position(player.get()->get_f_tile_position());
-		PlaySound(TEXT("resource/soundtrack_gullible.wav"), NULL, SND_LOOP | SND_ASYNC);
+		//PlaySound(TEXT("resource/soundtrack_gullible.wav"), NULL, SND_LOOP | SND_ASYNC);
 		return true;
 	}
 
@@ -187,7 +187,7 @@ public:
 			trashcan.update_surrounding_tiles(current_level);
 			trashcan.resolve_collisions(levels.get(), level_id);
 			trashcan.draw(fElapsedTime);
-			if (player.get()->check_hitbox(&trashcan))
+			if (player.get()->check_hitbox(&trashcan, fElapsedTime))
 			{
 				DrawString(player.get()->get_px_position(), "ENEMY NEARBY");
 			}
@@ -217,7 +217,7 @@ public:
 				// resolving collisions or getting out of bounds of the map results in deletion of the element
 				// also, if we hit the enemy already with the projectile, we delete it
 				// make sure we dont resolve collision with ground for the projectiles
-				if (proj->get()->resolve_collisions(levels.get(), level_id, false) || 
+				if (proj->get()->resolve_collisions(levels.get(), level_id, false, false) || 
 					(int)proj_pos.x > LEVEL_DESIGN_N_TILES_X || 
 					(int)proj_pos.x < 0 || 
 					proj->get()->is_enemy_hit)

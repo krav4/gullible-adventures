@@ -8,7 +8,7 @@
 #include <unordered_map>
 
 constexpr int default_creature_hp = 30;
-
+constexpr int default_creature_damage = 3;
 //// forward declaring some classes
 class LevelDesigns;
 struct Level;
@@ -21,6 +21,8 @@ struct AnimatedCreatureSurroundingTiles
 	Tile left_tile_bottom;
 	Tile bottom_tile_left;
 	Tile bottom_tile_right;
+	Tile top_tile_left;
+	Tile top_tile_right;
 };
 
 
@@ -29,7 +31,7 @@ struct TileSpriteSheets
 	std::string dirt;
 	std::string cloud;
 	std::string exit;
-	std::string metal;
+	std::string metal; 
 };
 
 typedef struct SpriteConfig
@@ -132,6 +134,7 @@ class AnimatedCreature : public Creature
 public:
 	bool is_on_even_ground = false;
 	int health_points = default_creature_hp;
+	int hit_damage = default_creature_damage;
 	bool is_pointing_right = true;
 	bool is_walking = false;
 	bool is_jumping = false;
@@ -151,7 +154,7 @@ public:
 	virtual void update_state(float fElapsedTime, olc::vf2d camera_offset) = 0;
 	virtual void update_surrounding_tiles(Level* current_level);
 	virtual bool check_next_to_symbol(char symbol);
-	virtual bool resolve_collisions(LevelDesigns* levels, int level_id, bool resolve_ground = true);
+	virtual bool resolve_collisions(LevelDesigns* levels, int level_id, bool resolve_ground = true, bool resolve_ceiliing = true);
 };
 
 class Trashcan : public AnimatedCreature
