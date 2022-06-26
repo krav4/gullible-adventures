@@ -13,14 +13,16 @@ public:
 
 private:
 	std::vector<Trashcan> trashcans;
-
-
+	olc::PixelGameEngine * m_eng;
+	TrashCanSpriteSheets m_trashcan_spritesheets;
+	void generate_trashcan_vector();
 public:
 	Level();
 	Level(std::wstring design, olc::PixelGameEngine* eng, TrashCanSpriteSheets* spriteSheets);
 	std::vector<Tile> get_tiles_with_symbol(char symbol);
 	Tile get_level_tile(olc::vi2d pos);
 	std::vector<Trashcan>* get_trashcans();
+	void reset_trashcans();
 };
 
 class LevelDesigns

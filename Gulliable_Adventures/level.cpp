@@ -13,7 +13,14 @@ Level::Level()
 
 Level::Level(std::wstring des, olc::PixelGameEngine * eng, TrashCanSpriteSheets * spriteSheets)
 {
+	m_eng = eng;
+	m_trashcan_spritesheets = *spriteSheets;
 	design = des;
+	generate_trashcan_vector();
+};
+
+void Level::generate_trashcan_vector()
+{
 	std::vector<Tile> trashcan_tiles = get_tiles_with_symbol(LEVEL_DESIGN_TRASHCAN);
 	if (trashcan_tiles.size() == 0)
 	{
@@ -21,11 +28,20 @@ Level::Level(std::wstring des, olc::PixelGameEngine * eng, TrashCanSpriteSheets 
 	}
 	for (auto& trashcan_tile : trashcan_tiles)
 	{
-		Trashcan trashcan(eng, spriteSheets);
+		Trashcan trashcan(m_eng, &m_trashcan_spritesheets);
 		trashcan.set_position(trashcan_tile.n_pos);
 		trashcans.push_back(trashcan);
 	}
-};
+}
+
+
+void Level::reset_trashcans()
+{
+	// TODO: i know this is inefficient to erase and construct vector again
+	// but this only ever happens after player died
+	trashcans.clear();
+	generate_trashcan_vector();
+}
 
 std::vector<Tile> Level::get_tiles_with_symbol(char symbol)
 {

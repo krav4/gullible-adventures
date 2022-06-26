@@ -118,11 +118,19 @@ public:
 
 	bool OnUserUpdate(float fElapsedTime) override
 	{
+		/** ------------------------- FRAME INITIALIZATION ----------------------*/
 		Clear(background_color);
 		SetPixelMode(olc::Pixel::MASK);
+
 		Level* current_level = levels.get()->get_level(level_id);
-		StaticCreature* interacting_creature = nullptr;
+
+		// get the vector of pointers to all enemies in the level
 		std::vector<Trashcan>* trashcans = current_level->get_trashcans();
+
+		// initializing currently interacting creature to nullptr, later we check
+		// if we are next to any of them and this will get assigned
+		StaticCreature* interacting_creature = nullptr;
+		// check if we are next to nearby creature, returns symbol from config.h
 		char nearby_creature = player.get()->check_next_to_static_creature(levels.get());
 
 		/** ------------------------- WELCOME SCREEN ----------------------*/
@@ -168,6 +176,7 @@ public:
 				player.get()->set_velocity({ 0.0f, 0.0f });
 				player.get()->is_dead = false;
 				player.get()->reset_health_points();
+				current_level->reset_trashcans();
 			}
 		}
 		/*--------------------------- NPC INTERACTION  -----------------------*/
@@ -221,40 +230,14 @@ public:
 			camera.draw_pop_up(creature_dialogue, player->emit_text_position({ -50, -40 }));
 		}
 		
-		/*--------------------------- PROCEEDING TO NEXT LEVEL -----------------------*/
-		else if (player.get()->check_next_to_exit())
-		{
-			camera.draw_pop_up("Press E for Next Level", player.get()->emit_text_position());
-			if (GetKey(olc::Key::E).bPressed)
-			{
-				level_id++;
-				player.get()->set_position(levels.get()->get_init_player_position(level_id));
-				player.get()->reset_health_points();
-			}
-		}
-
-		/*--------------------------- DRAWING ENEMIES -----------------------*/
-
-		
-		
-		for (auto& trashcan : *trashcans)
-		{
-			trashcan.update_state(fElapsedTime, camera.get_f_tile_offset());
-			trashcan.update_surrounding_tiles(current_level);
-			trashcan.resolve_collisions(levels.get(), level_id);
-			trashcan.draw(fElapsedTime);
-			if (player.get()->check_hitbox(&trashcan, fElapsedTime))
-			{
-				DrawString(player.get()->get_px_position(), "ENEMY NEARBY");
-			}
-		}
-		
+		/*--------------------------- EMITTING PROJECTILES -----------------------*/
 		if (GetKey(olc::Key::SPACE).bPressed)
 		{
 			std::unique_ptr<Projectile> proj = player.get()->emit_projectile();
-			// will return nullptr if time is not right
+			// will return nullptr if time is not right or player doesnt have it
 			if (proj != nullptr)
 			{
+				// add the unique ptr to the vector of projectiles
 				projectiles.push_back(std::move(proj));
 			}
 		}
@@ -299,6 +282,28 @@ public:
 			}
 		}
 
+		/*--------------------------- PROCEEDING TO NEXT LEVEL -----------------------*/
+		if (player.get()->check_next_to_exit())
+		{
+			camera.draw_pop_up("Press E for Next Level", player.get()->emit_text_position());
+			if (GetKey(olc::Key::E).bPressed)
+			{
+				level_id++;
+				player.get()->set_position(levels.get()->get_init_player_position(level_id));
+				player.get()->reset_health_points();
+			}
+		}
+
+		/*--------------------------- DRAWING ENEMIES/CHECKING HITBOX -----------------------*/
+
+		for (auto& trashcan : *trashcans)
+		{
+			trashcan.update_state(fElapsedTime, camera.get_f_tile_offset());
+			trashcan.update_surrounding_tiles(current_level);
+			trashcan.resolve_collisions(levels.get(), level_id);
+			trashcan.draw(fElapsedTime);
+			player.get()->check_hitbox(&trashcan, fElapsedTime);
+		}
 
 		/*--------------------------- DRAWING THE PLAYER -----------------------*/
 		player.get()->draw(fElapsedTime);
