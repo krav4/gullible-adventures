@@ -233,6 +233,11 @@ bool AnimatedCreature::resolve_collisions(LevelDesigns* levels, int level_id, bo
 	// resolve collisions, making sure the tiles are not any of the static creatures
 	// if they are static creatures, we should make sure we dont resolve collisions
 	bool ret = false;
+	if (pos.y <= 0)
+	{
+		pos.y = 0;
+		ret = true;
+	}
 	if ((is_tile_solid(&tiles.right_tile_top, levels) || (is_tile_solid(&tiles.right_tile_bottom, levels))))
 	{
 		if ((pos.x + 1.0f) > tiles.right_tile_top.n_pos.x)
@@ -252,18 +257,18 @@ bool AnimatedCreature::resolve_collisions(LevelDesigns* levels, int level_id, bo
 
 	if (resolve_ground)
 	{
-			if ((is_tile_solid(&tiles.bottom_tile_left, levels) || (is_tile_solid(&tiles.bottom_tile_right, levels))))
-	{
-		// set y velocity to 0
-		pos.y = int(pos.y);
-		is_on_even_ground = true;
-		vel.y = 0;
-		ret = true;
-	}
-	else
-	{
-		is_on_even_ground = false;
-	}
+		if ((is_tile_solid(&tiles.bottom_tile_left, levels) || (is_tile_solid(&tiles.bottom_tile_right, levels))))
+		{
+			// set y velocity to 0
+			pos.y = int(pos.y);
+			is_on_even_ground = true;
+			vel.y = 0;
+			ret = true;
+		}
+		else
+		{
+			is_on_even_ground = false;
+		}
 	}
 
 	return ret;
