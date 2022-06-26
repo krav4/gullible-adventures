@@ -73,6 +73,7 @@ public:
 		tile_spritesheets.dirt = "resource/dirt.png";
 		tile_spritesheets.cloud = "resource/cloud.png";
 		tile_spritesheets.exit = "resource/exit.png";
+		tile_spritesheets.metal = "resource/metal_tile.png";
 
 		SpriteConfig lupiConfig;
 		lupiConfig.image_name = "resource/lupi_flower.png";

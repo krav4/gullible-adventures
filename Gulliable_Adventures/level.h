@@ -33,6 +33,8 @@ private:
 	std::unique_ptr<olc::Decal> m_cloud_decal;
 	std::unique_ptr<olc::Sprite> m_exit_sprite;
 	std::unique_ptr<olc::Decal> m_exit_decal;
+	std::unique_ptr<olc::Sprite> m_metal_sprite;
+	std::unique_ptr<olc::Decal> m_metal_decal;
 	TrashCanSpriteSheets trash_sprites;
 	olc::PixelGameEngine* m_eng;
 public:
@@ -46,6 +48,8 @@ public:
 	olc::Decal* get_cloud_decal();
 
 	olc::Decal* get_exit_decal();
+
+	olc::Decal* get_metal_decal();
 
 	Level* get_level(int level_id);
 
