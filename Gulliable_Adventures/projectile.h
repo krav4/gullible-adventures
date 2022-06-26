@@ -2,8 +2,14 @@
 #include "creature.h"
 
 constexpr float projectile_velocity = 10.0f;
+constexpr float projectile_rotation_rate = 10.0f;
+// offset the drawing of projectile to accound for scaling when drawing
+constexpr float projectile_draw_offset_px = PX_TILE_SIZE_Y / 2;
 class Projectile : public AnimatedCreature
 {	
+private:
+	float rotation_rate = projectile_rotation_rate;
+	float rotation_angle = 0.0f;
 public:
 	std::string spritesheet;
 	olc::Decal* decal;
@@ -44,6 +50,10 @@ public:
 
 	virtual void draw(float fElapsedTime) override
 	{
-		engine->DrawDecal(pos_px, decal);
+		rotation_angle += rotation_rate * fElapsedTime;
+		olc::vi2d offset_pos_px = pos_px;
+		// drawing with offset so that its in the middle of the tile when we scale it down
+		offset_pos_px.y += projectile_draw_offset_px;
+		engine->DrawRotatedDecal(offset_pos_px, decal, rotation_angle, { PX_TILE_SIZE_X / 2, PX_TILE_SIZE_Y / 2 }, {0.5f, 0.5f});
 	}
 };

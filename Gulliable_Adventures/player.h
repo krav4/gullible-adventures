@@ -13,7 +13,7 @@ constexpr float player_jump_impulse_duration = 0.02f;
 constexpr float player_jump_speed = -20.0f;
 constexpr int player_health = 30;
 constexpr float hit_draw_timer = 0.2f;
-constexpr float projectile_emission_timer = 0.5f;
+constexpr float projectile_emission_timer = 0.3f;
 
 
 struct PlayerSpriteSheets

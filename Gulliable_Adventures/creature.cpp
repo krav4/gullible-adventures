@@ -188,7 +188,7 @@ void AnimatedCreature::reset_health_points(int new_hp)
 	vel = { 0.0f, 0.0f };
 }
 
-void AnimatedCreature::update_surrounding_tiles(Level* current_level, float margin)
+void AnimatedCreature::update_surrounding_tiles(Level* current_level)
 {
 
 	tiles.right_tile_top = current_level->get_level_tile({ (int)(pos.x + 1.0f), (int)(pos.y) });
@@ -252,18 +252,18 @@ bool AnimatedCreature::resolve_collisions(LevelDesigns* levels, int level_id, bo
 
 	if (resolve_ground)
 	{
-		if ((is_tile_solid(&tiles.bottom_tile_left, levels) || (is_tile_solid(&tiles.bottom_tile_right, levels))))
-		{
-			// set y velocity to 0
-			pos.y = int(pos.y);
-			is_on_even_ground = true;
-			vel.y = 0;
-			ret = true;
-		}
-		else
-		{
-			is_on_even_ground = false;
-		}
+			if ((is_tile_solid(&tiles.bottom_tile_left, levels) || (is_tile_solid(&tiles.bottom_tile_right, levels))))
+	{
+		// set y velocity to 0
+		pos.y = int(pos.y);
+		is_on_even_ground = true;
+		vel.y = 0;
+		ret = true;
+	}
+	else
+	{
+		is_on_even_ground = false;
+	}
 	}
 
 	return ret;
