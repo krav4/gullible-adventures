@@ -6,6 +6,8 @@
 #include "camera.h"
 #include "config.h"
 #include <experimental/filesystem>
+#include "windows.h"
+
 
 // Override base class with your custom functionality
 class GullyGame : public olc::PixelGameEngine
@@ -94,6 +96,7 @@ public:
 
 		camera = Camera(this, levels.get());
 		camera.set_center_position(player.get()->get_f_tile_position());
+		PlaySound(TEXT("resource/soundtrack_gullible.wav"), NULL, SND_LOOP | SND_ASYNC);
 		return true;
 	}
 
