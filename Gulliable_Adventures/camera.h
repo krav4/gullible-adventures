@@ -136,6 +136,11 @@ public:
 					ldesigns->static_creatures[LEVEL_DESIGN_LUPI]->draw(fElapsedTime);
 					break;
 
+				case LEVEL_DESIGN_LIZZIE:
+					ldesigns->static_creatures[LEVEL_DESIGN_LIZZIE]->set_position_px(px_tile_pos);
+					ldesigns->static_creatures[LEVEL_DESIGN_LIZZIE]->draw(fElapsedTime);
+					break;
+
 				default:
 					eng->FillRect(px_tile_pos, tile.size, olc::BLACK);
 					break;

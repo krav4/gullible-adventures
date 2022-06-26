@@ -116,17 +116,11 @@ public:
 	void increment_dialogue();
 	int get_dialogue_id();
 	int get_interaction_id();
+	void reset_dialogue();
 	void set_interaction_status(bool is_interacting);
 	bool get_interaction_status();
 	std::string get_dialogue();
 	virtual void draw(float fElapsedTime) override;
-};
-
-class Lupi : public StaticCreature
-{
-
-public:
-	Lupi(olc::PixelGameEngine* engine, const SpriteConfig* config, std::string name_input);
 };
 
 class AnimatedCreature : public Creature
@@ -186,4 +180,26 @@ public:
 	bool register_hit();
 	virtual void update_state(float fElapsedTime, olc::vf2d camera_offset) override;
 	virtual void draw(float fElapsedTime) override;
+};
+
+
+class Lupi : public StaticCreature
+{
+
+public:
+	Lupi(olc::PixelGameEngine* engine, const SpriteConfig* config, std::string name_input);
+};
+
+class Lizzie : public StaticCreature
+{
+
+public:
+	Lizzie(olc::PixelGameEngine* engine, const SpriteConfig* config, std::string name_input);
+};
+
+class Dad : public StaticCreature
+{
+
+public:
+	Dad(olc::PixelGameEngine* engine, const SpriteConfig* config, std::string name_input);
 };

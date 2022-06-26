@@ -105,6 +105,11 @@ int StaticCreature::get_interaction_id()
 	return m_interaction_id;
 }
 
+void StaticCreature::reset_dialogue()
+{
+	m_dialogue_id = 0;
+}
+
 void StaticCreature::set_interaction_status(bool is_interacting)
 {
 	m_is_interacting = is_interacting;
@@ -117,13 +122,14 @@ bool StaticCreature::get_interaction_status()
 
 std::string StaticCreature::get_dialogue()
 {
-	m_is_interacting = true;
+	//m_is_interacting = true;
 	// this means we exhausted all dialogue for that interaction
+
 	if (m_dialogue_id >= interactions[m_interaction_id].size())
 	{
 		m_is_interacting = false;
 		// reset the dialogue id back to first element
-		m_dialogue_id = 0;
+		reset_dialogue();
 		return "";
 	}
 	else
@@ -133,33 +139,13 @@ std::string StaticCreature::get_dialogue()
 		return ret;
 	}
 
+
 }
 void StaticCreature::draw(float fElapsedTime)
 {
 	engine->DrawDecal(pos_px, decal.get(), scale);
 }
 
-Lupi::Lupi(olc::PixelGameEngine* engine, const SpriteConfig* config, std::string name_input) : StaticCreature(engine, config, name_input)
-{
-	name = "Lupi";
-	std::vector<std::string> initial_interaction;
-	initial_interaction.push_back("Hewo! Im Lupi!");
-	initial_interaction.push_back("I love DAD!");
-	initial_interaction.push_back("I HATE TRASHCANS!");
-	initial_interaction.push_back("I have a problem......");
-	initial_interaction.push_back("Would u help me? =3");
-	initial_interaction.push_back("See... my dad LOVES Virginia Chestnut Trees...");
-	initial_interaction.push_back("And I weally want to make him happy >:3 ");
-	initial_interaction.push_back("So I have to deliver to him the world's...");
-	initial_interaction.push_back("... last VIRGINIA CHESTNUT SEED!!! ");
-	initial_interaction.push_back("The way to DAD is very dangerous.. :c ");
-	initial_interaction.push_back("The entire path is FILLED with...");
-	initial_interaction.push_back("... the evil TRASHCANS >:O ");
-	initial_interaction.push_back("Take this SEED and deliver it to DAD!! ");
-	initial_interaction.push_back("<LUPI GAVE YOU THE CHESTNUT SEED>");
-	initial_interaction.push_back("THENK U THENK U ok i go sweep now");
-	interactions.push_back(initial_interaction);
-};
 
 
 AnimatedCreature::AnimatedCreature() 
@@ -301,8 +287,6 @@ bool AnimatedCreature::resolve_collisions(LevelDesigns* levels, int level_id, bo
 		}
 
 	}
-
-
 	pos = new_pos;
 	return ret;
 }
@@ -423,3 +407,52 @@ void Trashcan::draw(float fElapsedTime)
 	}
 
 }
+
+
+Lupi::Lupi(olc::PixelGameEngine* engine, const SpriteConfig* config, std::string name_input) : StaticCreature(engine, config, name_input)
+{
+	name = "Lupi";
+	std::vector<std::string> initial_interaction;
+	initial_interaction.push_back("Hewo! \nIm Lupi!");
+	initial_interaction.push_back("I love DAD!");
+	initial_interaction.push_back("I HATE TRASHCANS!");
+	initial_interaction.push_back("I have a problem......");
+	initial_interaction.push_back("Would u help me? =3");
+	initial_interaction.push_back("See... my dad LOVES Virginia Chestnut Trees...");
+	initial_interaction.push_back("And I weally want to make him happy >:3 ");
+	initial_interaction.push_back("So I have to deliver to him the world's...");
+	initial_interaction.push_back("... last VIRGINIA CHESTNUT SEED!!! ");
+	initial_interaction.push_back("The way to DAD is very dangerous.. :c ");
+	initial_interaction.push_back("The entire path is FILLED with...");
+	initial_interaction.push_back("... the evil TRASHCANS >:O ");
+	initial_interaction.push_back("Take this SEED and deliver it to DAD!! ");
+	initial_interaction.push_back("<LUPI GAVE YOU THE CHESTNUT SEED>");
+	initial_interaction.push_back("THENK U THENK U ok i go sweep now");
+	interactions.push_back(initial_interaction);
+};
+
+
+Lizzie::Lizzie(olc::PixelGameEngine* engine, const SpriteConfig* config, std::string name_input) : StaticCreature(engine, config, name_input)
+{
+	name = "Lizzie";
+	std::vector<std::string> initial_interaction;
+	initial_interaction.push_back("Good afternoon! My full name is Wise Bean Lizzie.");
+	initial_interaction.push_back("I know everything and anything about these lands.");
+	initial_interaction.push_back("I heard you are helping my brother...\n" \
+								  "Thank you for that.");
+	initial_interaction.push_back("He can be a little...Slow....");
+	initial_interaction.push_back("I may be of help to your mission, dear lady. \n" \
+								 " I see my brother did not provide you with weapons.");
+	initial_interaction.push_back("Thats a shame...");
+	initial_interaction.push_back("However, I figured out a way to defeat them!\n"
+		"The secret weapon to defeat trashcans is...");
+	initial_interaction.push_back("PIZZA SLICES WITHOUT CRUST!!!");
+	initial_interaction.push_back("I have been collecting them a lot, since  \n"\
+								  "someone in my family only ever eats the crust");
+	initial_interaction.push_back("Here, have some of them!");
+	initial_interaction.push_back("<LIZZE GAVE YOU PIZZA SLICES WITHOUT CRUST>");
+	initial_interaction.push_back("You can press SPACE to throw them at EVIL TRASHCANS. ");
+	initial_interaction.push_back("I wish you all the best on your journey!");
+	initial_interaction.push_back("I hope you find what you seek...");
+	interactions.push_back(initial_interaction);
+};

@@ -176,15 +176,19 @@ public:
 		}
 	}
 
-	bool check_next_to_static_creature()
+	char check_next_to_static_creature()
 	{
 		if (check_next_to_symbol(LEVEL_DESIGN_LUPI))
 		{
-			return true;
+			return LEVEL_DESIGN_LUPI;
+		}
+		else if (check_next_to_symbol(LEVEL_DESIGN_LIZZIE))
+		{
+			return LEVEL_DESIGN_LIZZIE;
 		}
 		else
 		{
-			return false;
+			return ' ';
 		}
 	}
 

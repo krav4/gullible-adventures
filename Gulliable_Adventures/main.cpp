@@ -23,6 +23,7 @@ private:
 	std::unique_ptr<Player> player;
 	std::unique_ptr<LevelDesigns> levels;
 	std::unique_ptr<Lupi> lupi;
+	std::unique_ptr<Lizzie> lizzie;
 	std::unique_ptr<Trashcan> trashcan_demo;
 
 	bool is_game_started = false;
@@ -82,14 +83,21 @@ public:
 		lupiConfig.dims = { PX_TILE_SIZE_X, PX_TILE_SIZE_Y };
 		lupiConfig.scale = { 0.5, 0.5 };
 
+		SpriteConfig lizzieConfig;
+		lizzieConfig.image_name = "resource/lizzie.png";
+		lizzieConfig.dims = { PX_TILE_SIZE_X, PX_TILE_SIZE_Y };
+		lizzieConfig.scale = { 0.5, 0.5 };
+
 		std::string projectile_spritesheet = "resource/projectile.png";
 
 		player = std::make_unique<Player>(this, &pSpriteSheets, projectile_spritesheet);
 
 		lupi = std::make_unique<Lupi>(this, &lupiConfig, "Lupi");
+		lizzie = std::make_unique<Lizzie>(this, &lizzieConfig, "Lizzie");
 
 		levels = std::make_unique<LevelDesigns>(this, &tile_spritesheets, &trashcan_spritesheets);
 		levels.get()->set_static_creature('L', lupi.get());
+		levels.get()->set_static_creature('Z', lizzie.get());
 
 		player.get()->set_position({ 0.0f, 1.0f });
 		player.get()->set_velocity({ 0.0f, 0.0f });
@@ -105,6 +113,7 @@ public:
 		Clear(background_color);
 		SetPixelMode(olc::Pixel::MASK);
 		Level* current_level = levels.get()->get_level(level_id);
+		StaticCreature* interacting_creature = nullptr;
 
 		/** ------------------------- WELCOME SCREEN ----------------------*/
 		if (!is_game_started)
@@ -152,19 +161,40 @@ public:
 			}
 		}
 		/*--------------------------- NPC INTERACTION  -----------------------*/
-		else if (player.get()->check_next_to_static_creature())
+		char nearby_creature = player.get()->check_next_to_static_creature();
+		if (nearby_creature == LEVEL_DESIGN_LUPI)
 		{
-			if (!lupi.get()->get_interaction_status())
+			interacting_creature = lupi.get();
+		}
+		else if (nearby_creature == LEVEL_DESIGN_LIZZIE)
+		{
+			interacting_creature = lizzie.get();
+		}
+		else
+		{
+			// reset creature dialogue
+			creature_dialogue = "";
+			lupi.get()->reset_dialogue();
+			lupi.get()->set_interaction_status(false);
+			lizzie.get()->reset_dialogue();
+			lizzie.get()->set_interaction_status(false);
+		}
+		
+		if (interacting_creature != nullptr)
+		{
+			if (!interacting_creature->get_interaction_status())
 			{
-				camera.draw_pop_up("press E to talk", lupi.get()->emit_text_position({ -100, -10 }));
+				camera.draw_pop_up("press E to talk", interacting_creature->emit_text_position({ -100, -10 }));
 			}
 			if (GetKey(olc::Key::E).bPressed)
 			{	
+				interacting_creature->set_interaction_status(true);
 				// set the dialogue to whatever lupi has to say
-				creature_dialogue = lupi.get()->get_dialogue();
+				creature_dialogue = interacting_creature->get_dialogue();
 			}
-			camera.draw_pop_up(creature_dialogue, lupi.get()->emit_text_position({ -100, -10 }));
+			camera.draw_pop_up(creature_dialogue, interacting_creature->emit_text_position({ -100, -10 }));
 		}
+		
 		/*--------------------------- PROCEEDING TO NEXT LEVEL -----------------------*/
 		else if (player.get()->check_next_to_exit())
 		{
