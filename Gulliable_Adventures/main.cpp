@@ -63,11 +63,11 @@ public:
 		trashcan_spritesheets.px_height = PX_TILE_SIZE_X;
 		trashcan_spritesheets.px_width = PX_TILE_SIZE_Y;
 		trashcan_spritesheets.walk_left_spritesheet = "resource/trashcan_walk_left.png";
-		trashcan_spritesheets.walk_right_spritesheet = "resource/trashcan_walk_left.png";
+		trashcan_spritesheets.walk_right_spritesheet = "resource/trashcan_walk_right.png";
 		trashcan_spritesheets.dead_spritesheet = "resource/trashcan_dead.png";
-		trashcan_spritesheets.walk_tile_cols = 4;
+		trashcan_spritesheets.walk_tile_cols = 2;
 		trashcan_spritesheets.walk_tile_rows = 1;
-		trashcan_spritesheets.walk_tile_count = 4;
+		trashcan_spritesheets.walk_tile_count = 2;
 
 		TileSpriteSheets tile_spritesheets;
 		tile_spritesheets.dirt = "resource/dirt.png";
@@ -79,7 +79,7 @@ public:
 		lupiConfig.dims = { PX_TILE_SIZE_X, PX_TILE_SIZE_Y };
 		lupiConfig.scale = { 0.5, 0.5 };
 
-		std::string projectile_spritesheet = "resource/player_death.png";
+		std::string projectile_spritesheet = "resource/projectile.png";
 
 		player = std::make_unique<Player>(this, &pSpriteSheets, projectile_spritesheet);
 
@@ -212,7 +212,8 @@ public:
 				proj->get()->update_surrounding_tiles(current_level);
 				// resolving collisions or getting out of bounds of the map results in deletion of the element
 				// also, if we hit the enemy already with the projectile, we delete it
-				if (proj->get()->resolve_collisions(levels.get(), level_id) || 
+				// make sure we dont resolve collision with ground for the projectiles
+				if (proj->get()->resolve_collisions(levels.get(), level_id, false) || 
 					(int)proj_pos.x > LEVEL_DESIGN_N_TILES_X || 
 					(int)proj_pos.x < 0 || 
 					proj->get()->is_enemy_hit)

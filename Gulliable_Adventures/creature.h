@@ -148,9 +148,9 @@ public:
 	AnimatedCreature(const AnimatedCreature&);
 	virtual void reset_health_points(int new_hp = -1);
 	virtual void update_state(float fElapsedTime, olc::vf2d camera_offset) = 0;
-	virtual void update_surrounding_tiles(Level* current_level);
+	virtual void update_surrounding_tiles(Level* current_level, float margin = 0.0f);
 	virtual bool check_next_to_symbol(char symbol);
-	virtual bool resolve_collisions(LevelDesigns* levels, int level_id);
+	virtual bool resolve_collisions(LevelDesigns* levels, int level_id, bool resolve_ground = true);
 };
 
 class Trashcan : public AnimatedCreature

@@ -188,8 +188,9 @@ void AnimatedCreature::reset_health_points(int new_hp)
 	vel = { 0.0f, 0.0f };
 }
 
-void AnimatedCreature::update_surrounding_tiles(Level* current_level)
+void AnimatedCreature::update_surrounding_tiles(Level* current_level, float margin)
 {
+
 	tiles.right_tile_top = current_level->get_level_tile({ (int)(pos.x + 1.0f), (int)(pos.y) });
 	tiles.right_tile_bottom = current_level->get_level_tile({ (int)(pos.x + 1.0f), (int)(pos.y + 0.9f) });
 	tiles.left_tile_top = current_level->get_level_tile({ (int)(pos.x), (int)(pos.y) });
@@ -227,7 +228,7 @@ bool AnimatedCreature::check_next_to_symbol(char symbol)
 	}
 }
 
-bool AnimatedCreature::resolve_collisions(LevelDesigns* levels, int level_id)
+bool AnimatedCreature::resolve_collisions(LevelDesigns* levels, int level_id, bool resolve_ground)
 {
 	// resolve collisions, making sure the tiles are not any of the static creatures
 	// if they are static creatures, we should make sure we dont resolve collisions
@@ -249,18 +250,22 @@ bool AnimatedCreature::resolve_collisions(LevelDesigns* levels, int level_id)
 		ret = true;
 	}
 
-	if ((is_tile_solid(&tiles.bottom_tile_left, levels) || (is_tile_solid(&tiles.bottom_tile_right, levels))))
+	if (resolve_ground)
 	{
-		// set y velocity to 0
-		pos.y = int(pos.y);
-		is_on_even_ground = true;
-		vel.y = 0;
-		ret = true;
+		if ((is_tile_solid(&tiles.bottom_tile_left, levels) || (is_tile_solid(&tiles.bottom_tile_right, levels))))
+		{
+			// set y velocity to 0
+			pos.y = int(pos.y);
+			is_on_even_ground = true;
+			vel.y = 0;
+			ret = true;
+		}
+		else
+		{
+			is_on_even_ground = false;
+		}
 	}
-	else
-	{
-		is_on_even_ground = false;
-	}
+
 	return ret;
 }
 
@@ -268,7 +273,7 @@ Trashcan::Trashcan(olc::PixelGameEngine* eng, TrashCanSpriteSheets* spriteSheets
 {
 	m_spritesheets = *spriteSheets;
 	health_points = 3;
-	animation_interval = 0.08f;
+	animation_interval = 0.1f;
 	px_patrol_limit = patrol_limit;
 	create_decals();
 }

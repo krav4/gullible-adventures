@@ -20,4 +20,4 @@
 #define LEVEL_DESIGN_EXIT 'E'
 #define LEVEL_DESIGN_DEATH 'D'
 
-static constexpr float gravity = 70.0f;
+static constexpr float gravity = 50.0f;

@@ -9,8 +9,8 @@ constexpr float player_walk_flip_offset = 1.0f;
 constexpr float player_walk_speed = 6.0f;
 constexpr float player_walk_animation_interval = 0.02f;
 constexpr float player_scale = 0.5f;
-constexpr float player_jump_impulse_duration = 0.08f;
-constexpr float player_jump_speed = -22.0f;
+constexpr float player_jump_impulse_duration = 0.02f;
+constexpr float player_jump_speed = -20.0f;
 constexpr int player_health = 30;
 constexpr float hit_draw_timer = 0.2f;
 constexpr float projectile_emission_timer = 0.5f;
@@ -236,7 +236,7 @@ public:
 		
 		projectile = std::make_unique<Projectile>(engine, proj_decal.get());
 		proj_pos.x = pos.x;
-		proj_pos.y = pos.y - 1.0f;
+		proj_pos.y = pos.y;
 		proj_vel.y = 0.0f;
 		projectile->set_position(proj_pos);
 		if (is_pointing_right)

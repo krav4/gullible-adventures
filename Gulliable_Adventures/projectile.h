@@ -24,7 +24,7 @@ public:
 		}
 		olc::vf2d creature_pos = creature->get_f_tile_position();
 		if ((pos.x + 0.7f > creature_pos.x && pos.x < creature_pos.x + 0.7f) &&
-			(pos.y + 1.1f > creature_pos.y && pos.y < creature_pos.y + 1.1f))
+			(pos.y + 1.0f > creature_pos.y && pos.y < creature_pos.y + 1.0f))
 		{
 			// signal the code that we should get rid of the projectile
 			is_enemy_hit = true;
