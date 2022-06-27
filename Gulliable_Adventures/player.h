@@ -16,7 +16,7 @@ constexpr float hit_draw_timer = 0.2f;
 constexpr float hit_register_timer = 0.4f;
 constexpr float projectile_emission_timer = 0.3f;
 constexpr float hit_velocity_multiplier = 12.0f;
-constexpr float player_sliding_friction = -7.0f;
+constexpr float player_sliding_friction = -7.5f;
 
 struct PlayerSpriteSheets
 {

@@ -31,7 +31,8 @@ struct TileSpriteSheets
 	std::string dirt;
 	std::string cloud;
 	std::string exit;
-	std::string metal; 
+	std::string metal;
+	std::string lava;
 };
 
 typedef struct SpriteConfig

@@ -37,6 +37,9 @@ private:
 	std::unique_ptr<olc::Decal> m_exit_decal;
 	std::unique_ptr<olc::Sprite> m_metal_sprite;
 	std::unique_ptr<olc::Decal> m_metal_decal;
+	std::unique_ptr<olc::Sprite> m_lava_sprite;
+	std::unique_ptr<olc::Decal> m_lava_decal;
+
 	TrashCanSpriteSheets trash_sprites;
 	olc::PixelGameEngine* m_eng;
 public:
@@ -52,6 +55,8 @@ public:
 	olc::Decal* get_exit_decal();
 
 	olc::Decal* get_metal_decal();
+
+	olc::Decal* get_lava_decal();
 
 	Level* get_level(int level_id);
 

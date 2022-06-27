@@ -51,7 +51,7 @@ public:
 		{
 			throw std::invalid_argument("Player sprite does not exist!");
 		}
-		level_id = 0;
+		level_id = 2;
 		background_color = olc::Pixel( 0, 0, 255);
 		PlayerSpriteSheets pSpriteSheets;
 		
@@ -79,6 +79,7 @@ public:
 		tile_spritesheets.cloud = "resource/cloud.png";
 		tile_spritesheets.exit = "resource/exit.png";
 		tile_spritesheets.metal = "resource/metal_tile.png";
+		tile_spritesheets.lava = "resource/lava.png";
 
 		SpriteConfig lupiConfig;
 		lupiConfig.image_name = "resource/lupi_flower.png";
@@ -114,11 +115,12 @@ public:
 		levels.get()->set_static_creature('Z', lizzie.get());
 		levels.get()->set_static_creature('A', dad.get());
 
-		player.get()->set_position({ 0.0f, 1.0f });
+		player.get()->set_position(levels.get()->get_init_player_position(level_id));
 		player.get()->set_velocity({ 0.0f, 0.0f });
 
 		camera = Camera(this, levels.get());
 		camera.set_center_position(player.get()->get_f_tile_position());
+		player.get()->give_projectile();
 		//PlaySound(TEXT("resource/soundtrack_gullible.wav"), NULL, SND_LOOP | SND_ASYNC);
 		return true;
 	}
@@ -128,7 +130,6 @@ public:
 		/** ------------------------- FRAME INITIALIZATION ----------------------*/
 		Clear(background_color);
 		SetPixelMode(olc::Pixel::MASK);
-
 		Level* current_level = levels.get()->get_level(level_id);
 
 		// get the vector of pointers to all enemies in the level
@@ -154,7 +155,9 @@ public:
 				DrawString({ 100 , 200 }, "Keep pressing E to exhaust dialogue!", olc::WHITE, 4);
 				DrawString({ 100 , 250 }, "Press UP to jump!", olc::WHITE, 4);
 				DrawString({ 100 , 300 }, "Avoid TRASHCANS (initially)", olc::WHITE, 4);
-				DrawString({ 100 , 400 }, "Press E to continue...", olc::WHITE, 4);
+				DrawString({ 100 , 350 }, "Lava is DEADLY", olc::WHITE, 4);
+				DrawString({ 100 , 400 }, "If you die, press E to restart level", olc::WHITE, 4);
+				DrawString({ 100 , 500 }, "Press E to continue...", olc::WHITE, 4);
 				player.get()->draw(fElapsedTime);
 			}
 			return true;
@@ -172,6 +175,18 @@ public:
 		player.get()->update_state(fElapsedTime, camera.get_f_tile_offset());
 		player.get()->update_surrounding_tiles(current_level);
 		player.get()->resolve_collisions(levels.get(), level_id);
+
+		/*--------------------------- UPDATING/DRAWING TRASHCANS, CHECKING HITBOX -----------------------*/
+
+		for (auto& trashcan : *trashcans)
+		{
+			trashcan.update_state(fElapsedTime, camera.get_f_tile_offset());
+			trashcan.update_surrounding_tiles(current_level);
+			trashcan.resolve_collisions(levels.get(), level_id);
+			trashcan.draw(fElapsedTime);
+			player.get()->check_hitbox(&trashcan, fElapsedTime);
+		}
+
 
 		/*--------------------------- FALLING TO DEATH ---------------------*/
 		if (player.get()->check_death())
@@ -301,16 +316,6 @@ public:
 			}
 		}
 
-		/*--------------------------- DRAWING ENEMIES/CHECKING HITBOX -----------------------*/
-
-		for (auto& trashcan : *trashcans)
-		{
-			trashcan.update_state(fElapsedTime, camera.get_f_tile_offset());
-			trashcan.update_surrounding_tiles(current_level);
-			trashcan.resolve_collisions(levels.get(), level_id);
-			trashcan.draw(fElapsedTime);
-			player.get()->check_hitbox(&trashcan, fElapsedTime);
-		}
 
 		/*--------------------------- DRAWING THE PLAYER -----------------------*/
 		player.get()->draw(fElapsedTime);

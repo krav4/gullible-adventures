@@ -128,6 +128,7 @@ public:
 					break;
 
 				case LEVEL_DESIGN_DEATH:
+					eng->DrawDecal(px_tile_pos, ldesigns->get_lava_decal());
 					break;
 
 				case LEVEL_DESIGN_LUPI:
