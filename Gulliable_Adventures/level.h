@@ -57,3 +57,13 @@ public:
 
 	void set_static_creature(char symbol, StaticCreature* static_creature);
 };
+
+class Tree
+{
+	std::unique_ptr<olc::Sprite> m_sprite;
+	std::unique_ptr<olc::Decal> m_decal;
+	SpriteConfig m_tree_config;
+public:
+	Tree(SpriteConfig * tree_config);
+	void draw(olc::PixelGameEngine* eng, olc::vi2d pos_px);
+};

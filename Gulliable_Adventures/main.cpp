@@ -25,6 +25,7 @@ private:
 	std::unique_ptr<Lupi> lupi;
 	std::unique_ptr<Lizzie> lizzie;
 	std::unique_ptr<Dad> dad;
+	std::unique_ptr<Tree> tree;
 	std::unique_ptr<Trashcan> trashcan_demo;
 
 	bool is_game_started = false;
@@ -94,6 +95,11 @@ public:
 		dadConfig.dims = { PX_TILE_SIZE_X, PX_TILE_SIZE_Y };
 		dadConfig.scale = { 0.5, 0.5 };
 
+		SpriteConfig treeConfig;
+		treeConfig.image_name = "resource/tree.png";
+		treeConfig.dims = { 400, 600 };
+		treeConfig.scale = { 1, 1 };
+
 		std::string projectile_spritesheet = "resource/projectile.png";
 
 		player = std::make_unique<Player>(this, &pSpriteSheets, projectile_spritesheet);
@@ -101,6 +107,7 @@ public:
 		lupi = std::make_unique<Lupi>(this, &lupiConfig, "Lupi");
 		lizzie = std::make_unique<Lizzie>(this, &lizzieConfig, "Lizzie");
 		dad = std::make_unique<Dad>(this, &dadConfig, "Dad");
+		tree = std::make_unique<Tree>(&treeConfig);
 
 		levels = std::make_unique<LevelDesigns>(this, &tile_spritesheets, &trashcan_spritesheets);
 		levels.get()->set_static_creature('L', lupi.get());

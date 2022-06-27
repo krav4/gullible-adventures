@@ -176,3 +176,15 @@ void LevelDesigns::set_static_creature(char symbol, StaticCreature* static_creat
 	static_creatures[symbol] = static_creature;
 }
 
+
+Tree::Tree(SpriteConfig* tree_config)
+{
+	m_tree_config = *tree_config;
+	m_sprite = std::make_unique<olc::Sprite>(tree_config->image_name);
+	m_decal = std::make_unique<olc::Decal>(m_sprite.get());
+}
+
+void Tree::draw(olc::PixelGameEngine* eng, olc::vi2d pos_px)
+{
+	eng->DrawDecal(pos_px, m_decal.get());
+}
