@@ -23,6 +23,7 @@ public:
 	Tile get_level_tile(olc::vi2d pos);
 	std::vector<Trashcan>* get_trashcans();
 	void reset_trashcans();
+	void clear_trashcans();
 };
 
 class LevelDesigns

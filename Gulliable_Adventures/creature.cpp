@@ -354,20 +354,28 @@ void Trashcan::update_state(float fElapsedTime, olc::vf2d camera_offset)
 	pos_px = tile_to_px(pos, camera_offset);
 
 	// if we reached the patrolling limit, now flip the trashcan
-	// TODO: right now the trashcan gets stuck if its in constricted space
-	if ((is_pointing_right) && 
+	if (is_pointing_right && 
 		(tiles.bottom_tile_right.symbol == LEVEL_DESIGN_EMPTY  ||
 		tiles.bottom_tile_right.symbol == LEVEL_DESIGN_DEATH ||
 		 tiles.right_tile_top.symbol != LEVEL_DESIGN_EMPTY))
 	{
-		is_pointing_right = false;
+		// make sure we dont swap direction if colliding with trashcan spawn place
+		if (tiles.right_tile_top.symbol != LEVEL_DESIGN_TRASHCAN)
+		{
+			is_pointing_right = false;
+		}
 	}
 	else if ((!is_pointing_right) &&
+
 		(tiles.bottom_tile_left.symbol == LEVEL_DESIGN_EMPTY ||
 		tiles.bottom_tile_left.symbol == LEVEL_DESIGN_DEATH ||
 		tiles.left_tile_top.symbol != LEVEL_DESIGN_EMPTY))
 	{
-		is_pointing_right = true;
+		if (tiles.left_tile_top.symbol != LEVEL_DESIGN_TRASHCAN)
+		{
+			is_pointing_right = true;
+		}
+		
 	}
 }
 

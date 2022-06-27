@@ -6,18 +6,18 @@
 #include "projectile.h"
 #include <unordered_map>
 constexpr float player_walk_flip_offset = 1.0f;
-constexpr float player_walk_speed = 6.0f;
+constexpr float player_walk_speed = 7.0f;
 constexpr float player_walk_animation_interval = 0.02f;
 constexpr float player_scale = 0.5f;
 constexpr float player_jump_impulse_duration = 0.02f;
-constexpr float player_jump_speed = -20.0f;
+constexpr float player_jump_speed = -15.0f;
 constexpr int player_health = 30;
 constexpr float hit_draw_timer = 0.2f;
 constexpr float hit_register_timer = 0.4f;
 constexpr float projectile_emission_timer = 0.3f;
 constexpr float hit_velocity_multiplier = 12.0f;
 constexpr float player_sliding_friction = -10.0f;
-
+constexpr float player_air_drag = -3.0f;
 struct PlayerSpriteSheets
 {
 	std::string walk_right_spritesheet;
@@ -143,6 +143,7 @@ public:
 		if (!is_on_even_ground)
 		{
 			vel.y += gravity * fElapsedTime;
+			vel.x += player_air_drag * vel.x * fElapsedTime;
 		}
 
 		if (!is_walking && is_on_even_ground && !is_hit)

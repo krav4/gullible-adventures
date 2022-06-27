@@ -51,7 +51,7 @@ public:
 		{
 			throw std::invalid_argument("Player sprite does not exist!");
 		}
-		level_id = 3;
+		level_id = 0;
 		background_color = olc::Pixel( 0, 0, 255);
 		PlayerSpriteSheets pSpriteSheets;
 		
@@ -313,6 +313,11 @@ public:
 				level_id++;
 				player.get()->set_position(levels.get()->get_init_player_position(level_id));
 				player.get()->reset_health_points();
+				current_level->clear_trashcans();
+				//reset new level
+				current_level = levels.get()->get_level(level_id);
+				// make sure trashcans get cleared and new ones are made
+				current_level->reset_trashcans();
 			}
 		}
 
