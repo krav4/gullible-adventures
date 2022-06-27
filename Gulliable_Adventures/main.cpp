@@ -51,7 +51,7 @@ public:
 		{
 			throw std::invalid_argument("Player sprite does not exist!");
 		}
-		level_id = 0;
+		level_id = 4;
 		background_color = olc::Pixel( 0, 0, 255);
 		PlayerSpriteSheets pSpriteSheets;
 		
@@ -176,17 +176,6 @@ public:
 		player.get()->update_surrounding_tiles(current_level);
 		player.get()->resolve_collisions(levels.get(), level_id);
 
-		/*--------------------------- UPDATING/DRAWING TRASHCANS, CHECKING HITBOX -----------------------*/
-
-		for (auto& trashcan : *trashcans)
-		{
-			trashcan.update_state(fElapsedTime, camera.get_f_tile_offset());
-			trashcan.update_surrounding_tiles(current_level);
-			trashcan.resolve_collisions(levels.get(), level_id);
-			trashcan.draw(fElapsedTime);
-			player.get()->check_hitbox(&trashcan, fElapsedTime);
-		}
-
 
 		/*--------------------------- FALLING TO DEATH ---------------------*/
 		if (player.get()->check_death())
@@ -199,7 +188,19 @@ public:
 				player.get()->is_dead = false;
 				player.get()->reset_health_points();
 				current_level->reset_trashcans();
+				// TODO: deduplicate
+				trashcans = current_level->get_trashcans();
 			}
+		}
+
+
+		/*--------------------------- UPDATING/DRAWING TRASHCANS, CHECKING HITBOX -----------------------*/
+
+		for (auto& trashcan : *trashcans)
+		{
+			trashcan.update_state(fElapsedTime, camera.get_f_tile_offset());
+			trashcan.update_surrounding_tiles(current_level);
+			trashcan.resolve_collisions(levels.get(), level_id);
 		}
 		/*--------------------------- NPC INTERACTION  -----------------------*/
 		
@@ -313,14 +314,18 @@ public:
 				level_id++;
 				player.get()->set_position(levels.get()->get_init_player_position(level_id));
 				player.get()->reset_health_points();
-				current_level->clear_trashcans();
-				//reset new level
 				current_level = levels.get()->get_level(level_id);
 				// make sure trashcans get cleared and new ones are made
 				current_level->reset_trashcans();
 			}
 		}
+		/*--------------------------- DRAWING THE TRASHCANS -----------------------*/
+		for (auto& trashcan : *trashcans)
+		{
 
+			trashcan.draw(fElapsedTime);
+			player.get()->check_hitbox(&trashcan, fElapsedTime);
+		}
 
 		/*--------------------------- DRAWING THE PLAYER -----------------------*/
 		player.get()->draw(fElapsedTime);
