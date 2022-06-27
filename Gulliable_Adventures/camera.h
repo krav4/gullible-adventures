@@ -73,17 +73,18 @@ public:
 		eng->DrawString(pos_px, pop_up_text, olc::WHITE, 2);
 	}
 
-	void draw_endgame()
+	void draw_dead()
 	{
 		eng->DrawString({ px_display_center.x - 500, px_display_center.y - 100}, "YOU DIED (SAD)", olc::VERY_DARK_RED, 10);
-		eng->DrawString({ px_display_center.x - 500, px_display_center.y + 100 }, "Press E to Continue...", olc::VERY_DARK_RED, 2);
+		eng->DrawString({ px_display_center.x - 500, px_display_center.y + 100 }, "Press E to Continue...", olc::WHITE, 2);
 	}
 
-	void draw_health_bar(Player* player)
+	void draw_status(Player* player, int level_id)
 	{
 		int barsize = player->health_points * 10;
-		eng->FillRect({ 20,20 }, { barsize, 10 }, olc::RED);
-
+		eng->FillRect({ 20,30 }, { barsize, 20 }, olc::RED);
+		std::string level_status = "Level " + std::to_string(level_id + 1) + "/" + std::to_string(7);
+		eng->DrawString({ 20, 50 }, level_status, olc::WHITE, 2);
 	}
 		
 

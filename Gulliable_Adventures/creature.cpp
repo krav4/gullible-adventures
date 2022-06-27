@@ -446,6 +446,30 @@ Lupi::Lupi(olc::PixelGameEngine* engine, const SpriteConfig* config, std::string
 	initial_interaction.push_back("<LUPI GAVE YOU THE CHESTNUT SEED>");
 	initial_interaction.push_back("THENK U THENK U ok i go sweep now");
 	interactions.push_back(initial_interaction);
+
+	std::vector<std::string> level2_interaction;
+	level2_interaction.push_back("IM LUUUPIII !!!");
+	level2_interaction.push_back("IM HANDSUM !!!");
+	level2_interaction.push_back("Thank u for killing those trashcans!");
+	level2_interaction.push_back("Only 5 more levels until DAD is happy!");
+	level2_interaction.push_back("I sweep now, too much thinking >=o");
+	interactions.push_back(level2_interaction);
+
+	std::vector<std::string> level5_interaction;
+	level5_interaction.push_back("HAAII AGAIN! IM LUPIIII");
+	level5_interaction.push_back("We are ALMOST there!!!");
+	level5_interaction.push_back("Wise Bean Lizzie tells me there is \n"\
+								"A lot of LAVA and TRASHCANS here!!!");
+	level5_interaction.push_back("I'm scared =/");
+	interactions.push_back(level5_interaction);
+
+	std::vector<std::string> endgame_interaction;
+	endgame_interaction.push_back("OMG!!! WE DID IT!!!");
+	endgame_interaction.push_back("I HAVE NEVER SEEN DAD SO HAPPY!");
+	endgame_interaction.push_back("AND THIS TREE... ITS BEAUTIFUL...");
+	endgame_interaction.push_back("Thank you, now Dad and I will\n" \
+								  "live HAPPILY FOREVER!!!!");
+	interactions.push_back(endgame_interaction);
 };
 
 
@@ -478,6 +502,30 @@ Lizzie::Lizzie(olc::PixelGameEngine* engine, const SpriteConfig* config, std::st
 	initial_interaction.push_back("I wish you all the best on your journey!");
 	initial_interaction.push_back("I hope you find what you seek...");
 	interactions.push_back(initial_interaction);
+
+	std::vector<std::string> level2_interaction;
+	level2_interaction.push_back("You did amazing! ");
+	level2_interaction.push_back("Those pizzas are helping, huh?");
+	level2_interaction.push_back("There is still a lot of ground to cover!");
+	level2_interaction.push_back("Good luck!");
+	interactions.push_back(level2_interaction);
+
+	std::vector<std::string> level3_interaction;
+	level3_interaction.push_back("Hey there! Just checking on you! ");
+	level3_interaction.push_back("You still got that seed?");
+	level3_interaction.push_back("Don't loose it! This level is...\n"\
+		"precarious...");
+	level3_interaction.push_back("I wish you all the best!");
+	interactions.push_back(level3_interaction);
+
+	std::vector<std::string> endgame_interaction;
+	endgame_interaction.push_back("Huh, I really wasn't sure if you \n"
+		" were really going to make it!");
+
+	endgame_interaction.push_back("I have to say: I am surprised!");
+	endgame_interaction.push_back("Now you should go ahead and \n give the tree seed to DAD");
+	endgame_interaction.push_back("He has been waiting for you.");
+	interactions.push_back(endgame_interaction);
 };
 
 bool Lizzie::is_giving_weapon_to_player()
@@ -497,5 +545,28 @@ Dad::Dad(olc::PixelGameEngine* engine, const SpriteConfig* config, std::string n
 	name = "Dad";
 	std::vector<std::string> initial_interaction;
 	initial_interaction.push_back("Hey! Hope you had a safe journey!");
+	initial_interaction.push_back("Lupi told me trashcans were giving\n you some trouble!");
+	initial_interaction.push_back("Sorry about that. More importantly:\n do you have it?");
+	initial_interaction.push_back("<<YOU GIVE DAD THE LAST \n SEED OF VIRGINIA CHESTNUT>>");
+	initial_interaction.push_back("Ahhhhh yes, finally!");
+	initial_interaction.push_back("Let us plant it right away!!!");
 	interactions.push_back(initial_interaction);
+
+	std::vector<std::string> endgame_interaction;
+	endgame_interaction.push_back("Its truly magnificent!");
+	endgame_interaction.push_back("Congratulations on completing \n GULLIABLE ADVENTURES!");
+	interactions.push_back(endgame_interaction);
+
 };
+
+bool Dad::is_tree_seed_received()
+{
+	if (m_interaction_id == 0 && (m_dialogue_id == (interactions[0].size())))
+	{
+		return true;
+	}
+	else
+	{
+		return false;
+	}
+}

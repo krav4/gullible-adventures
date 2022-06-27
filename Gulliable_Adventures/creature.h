@@ -203,4 +203,5 @@ class Dad : public StaticCreature
 
 public:
 	Dad(olc::PixelGameEngine* engine, const SpriteConfig* config, std::string name_input);
+	bool is_tree_seed_received();
 };

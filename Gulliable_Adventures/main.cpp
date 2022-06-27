@@ -29,6 +29,8 @@ private:
 	std::unique_ptr<Trashcan> trashcan_demo;
 
 	bool is_game_started = false;
+	bool is_game_finished = false;
+	bool is_final_song_playing = false;
 
 	std::vector<std::unique_ptr<Projectile>> projectiles;
 
@@ -51,7 +53,7 @@ public:
 		{
 			throw std::invalid_argument("Player sprite does not exist!");
 		}
-		level_id = 6;
+		level_id = 0;
 		background_color = olc::Pixel( 0, 0, 255);
 		PlayerSpriteSheets pSpriteSheets;
 		
@@ -97,8 +99,8 @@ public:
 		dadConfig.scale = { 0.5, 0.5 };
 
 		SpriteConfig treeConfig;
-		treeConfig.image_name = "resource/tree.png";
-		treeConfig.dims = { 400, 600 };
+		treeConfig.image_name = "resource/tree_small.png";
+		treeConfig.dims = { 200, 300 };
 		treeConfig.scale = { 1, 1 };
 
 		std::string projectile_spritesheet = "resource/projectile.png";
@@ -120,8 +122,6 @@ public:
 
 		camera = Camera(this, levels.get());
 		camera.set_center_position(player.get()->get_f_tile_position());
-		player.get()->give_projectile();
-		//PlaySound(TEXT("resource/soundtrack_gullible.wav"), NULL, SND_LOOP | SND_ASYNC);
 		return true;
 	}
 
@@ -168,30 +168,13 @@ public:
 		camera.set_center_position(player.get()->get_f_tile_position());
 		// draw all the level tiles
 		camera.draw_level_scene(level_id, fElapsedTime);
-		camera.draw_health_bar(player.get());
+		camera.draw_status(player.get(), level_id);
 
 		/*--------------------------- UPDATING PLAYER STATE -----------------------*/
 		// update player state to new
 		player.get()->update_state(fElapsedTime, camera.get_f_tile_offset());
 		player.get()->update_surrounding_tiles(current_level);
 		player.get()->resolve_collisions(levels.get(), level_id);
-
-
-		/*--------------------------- FALLING TO DEATH ---------------------*/
-		if (player.get()->check_death())
-		{
-			camera.draw_endgame();
-			if (GetKey(olc::Key::E).bPressed)
-			{
-				player.get()->set_position(levels.get()->get_init_player_position(level_id));
-				player.get()->set_velocity({ 0.0f, 0.0f });
-				player.get()->is_dead = false;
-				player.get()->reset_health_points();
-				current_level->reset_trashcans();
-				// TODO: deduplicate
-				trashcans = current_level->get_trashcans();
-			}
-		}
 
 
 		/*--------------------------- UPDATING/DRAWING TRASHCANS, CHECKING HITBOX -----------------------*/
@@ -202,6 +185,29 @@ public:
 			trashcan.update_surrounding_tiles(current_level);
 			trashcan.resolve_collisions(levels.get(), level_id);
 		}
+		/*--------------------------- FALLING TO DEATH ---------------------*/
+		if (player.get()->check_death())
+		{
+			camera.draw_dead();
+			if (GetKey(olc::Key::E).bPressed)
+			{
+				player.get()->set_position(levels.get()->get_init_player_position(level_id));
+				player.get()->set_velocity({ 0.0f, 0.0f });
+				player.get()->is_dead = false;
+				player.get()->reset_health_points();
+				current_level->reset_trashcans();
+				// TODO: deduplicate
+				trashcans = current_level->get_trashcans();
+				for (auto& trashcan : *trashcans)
+				{
+					trashcan.update_state(fElapsedTime, camera.get_f_tile_offset());
+					trashcan.update_surrounding_tiles(current_level);
+					trashcan.resolve_collisions(levels.get(), level_id);
+				}
+			}
+		}
+
+
 		/*--------------------------- NPC INTERACTION  -----------------------*/
 		
 		// TODO: switch would be better
@@ -247,6 +253,15 @@ public:
 					if (lizzie.get()->is_giving_weapon_to_player() && player.get()->m_has_projectile == false)
 					{
 						player.get()->give_projectile();
+					}
+				}
+
+				if (interacting_creature->name == "Dad")
+				{
+					if (dad.get()->is_tree_seed_received())
+					{
+						dad.get()->increment_interaction();
+						is_game_finished = true;
 					}
 				}
 			}
@@ -317,6 +332,25 @@ public:
 				current_level = levels.get()->get_level(level_id);
 				// make sure trashcans get cleared and new ones are made
 				current_level->reset_trashcans();
+				// TODO: deduplicate
+				trashcans = current_level->get_trashcans();
+				for (auto& trashcan : *trashcans)
+				{
+					trashcan.update_state(fElapsedTime, camera.get_f_tile_offset());
+					trashcan.update_surrounding_tiles(current_level);
+					trashcan.resolve_collisions(levels.get(), level_id);
+				}
+
+				// deal with lizzie interactions
+				if (level_id == 1 || level_id == 2 || level_id == 6)
+				{
+					lizzie.get()->increment_interaction();
+				}
+				// deal with lupi interactions
+				if (level_id == 1 || level_id == 4 || level_id == 6)
+				{
+					lupi.get()->increment_interaction();
+				}
 			}
 		}
 		/*--------------------------- DRAWING THE TRASHCANS -----------------------*/
@@ -327,10 +361,29 @@ public:
 			player.get()->check_hitbox(&trashcan, fElapsedTime);
 		}
 
+
+
+		/*--------------------------- ENDGAME -----------------------*/
+		if (is_game_finished)
+		{
+			olc::vi2d plant_pos;
+			plant_pos.x = dad.get()->get_px_position().x - 200;
+			plant_pos.y = dad.get()->get_px_position().y - 200;
+			// need to plant the tree
+			tree.get()->draw(this, plant_pos);
+			// finisher song
+			if (!is_final_song_playing)
+			{
+				PlaySound(TEXT("resource/soundtrack_gullible.wav"), NULL, SND_LOOP | SND_ASYNC);
+				is_final_song_playing = true;
+			}
+			
+		}
+
 		/*--------------------------- DRAWING THE PLAYER -----------------------*/
 		player.get()->draw(fElapsedTime);
-
 		return true;
+
 	}
 };
 

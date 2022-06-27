@@ -14,7 +14,7 @@ constexpr float player_jump_speed = -15.0f;
 constexpr int player_health = 30;
 constexpr float hit_draw_timer = 0.2f;
 constexpr float hit_register_timer = 0.4f;
-constexpr float projectile_emission_timer = 0.3f;
+constexpr float projectile_emission_timer = 0.15f;
 constexpr float hit_velocity_multiplier = 12.0f;
 constexpr float player_sliding_friction = -10.0f;
 constexpr float player_air_drag = -3.0f;
@@ -56,8 +56,6 @@ private:
 	olc::vf2d hit_velocity = {0.0f, 0.0f};
 	float m_hit_draw_timer = 0.0f;
 	float m_hit_register_timer = 0.0f;
-
-
 
 	std::string proj_spritesheet;
 	std::unique_ptr<Projectile>  projectile;
