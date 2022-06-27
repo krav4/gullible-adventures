@@ -51,7 +51,7 @@ public:
 		{
 			throw std::invalid_argument("Player sprite does not exist!");
 		}
-		level_id = 2;
+		level_id = 3;
 		background_color = olc::Pixel( 0, 0, 255);
 		PlayerSpriteSheets pSpriteSheets;
 		

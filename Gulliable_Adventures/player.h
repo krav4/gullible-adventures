@@ -16,7 +16,7 @@ constexpr float hit_draw_timer = 0.2f;
 constexpr float hit_register_timer = 0.4f;
 constexpr float projectile_emission_timer = 0.3f;
 constexpr float hit_velocity_multiplier = 12.0f;
-constexpr float player_sliding_friction = -7.5f;
+constexpr float player_sliding_friction = -10.0f;
 
 struct PlayerSpriteSheets
 {
@@ -150,7 +150,7 @@ public:
 			vel.y = 0.0f;
 			// adding "sliding" drag to the player 
 			vel.x += player_sliding_friction * vel.x * fElapsedTime;
-			if (abs(vel.x) <= 0.01f)
+			if (abs(vel.x) <= 0.02f)
 			{
 				vel.x = 0.0f;
 			}
